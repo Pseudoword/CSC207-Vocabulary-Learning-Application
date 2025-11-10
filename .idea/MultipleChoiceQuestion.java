@@ -3,12 +3,12 @@ import java.util.List;
 public class MultipleChoiceQuestion {
     private Vocabulary word;
     private List<String> choices;
-    private String answer;
+    private int answerIndex;
 
-    public MultipleChoiceQuestion(Vocabulary word, List<String> choices, int answer_index){
+    public MultipleChoiceQuestion(Vocabulary word, List<String> choices, int answerIndex){
         this.word = word;
         this.choices = choices;
-        this.answer = choices.get(answer_index);
+        this.answerIndex = answerIndex;
     }
 
     public Vocabulary getWord() {
@@ -19,12 +19,12 @@ public class MultipleChoiceQuestion {
         return choices;
     }
 
-    public String getAnswer() {
-        return answer;
+    public String getAnswerIndex() {
+        return answerIndex;
     }
 
-    public boolean checkAnswer(String userChoice){
-        return answer.equals(userChoice);
+    public boolean checkAnswer(int userChoiceIndex){
+        return userChoiceIndex == answerIndex;
     }
 
     public void displayQuestion() {
