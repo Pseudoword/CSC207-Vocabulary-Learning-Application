@@ -5,10 +5,10 @@ public class MultipleChoiceQuestion {
     private List<String> choices;
     private String answer;
 
-    public MultipleChoiceQuestion(Vocabulary word, List<String> choices, String answer){
+    public MultipleChoiceQuestion(Vocabulary word, List<String> choices, int answer_index){
         this.word = word;
         this.choices = choices;
-        this.answer = answer;
+        this.answer = choices.get(answer_index);
     }
 
     public Vocabulary getWord() {
@@ -32,10 +32,6 @@ public class MultipleChoiceQuestion {
         for (int i = 0; i < choices.size(); i++) {
             System.out.println((i + 1) + ". " + choices.get(i)); //prints options as "1. choice" "2. choice" etc.
         }
-    }
-
-    public int getCorrectChoiceIndex() {
-        return choices.indexOf(answer);
     }
 
     public int getChoiceIndex(String userChoice) {
