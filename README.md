@@ -194,16 +194,16 @@ A desktop application to help users expand and reinforce vocabulary with flashca
 
 ## MVP
 
-| Use Case                    | User Story | Lead    |
-| --------------------------- | ---------- | ------- |
-| Log in / Sign up            | 1          | Kaiyang |
-| Navigating main menu        | 2          | Jiamei  |
-| Create Deck                 | 3          | Nerissa |
-| Edit Deck                   | 4          | Jiamei  |
-| Study Flash Cards           | 5          | Kaiyang |
-| Review Flash Cards          | 6          | Jinuo   |
-| Taking Multiple-choice Quiz | 7          | Lan     |
-| Mastering Decks             | 8          | Lan     |
+| Use Case                    | User Story | Lead        |
+| --------------------------- | ---------- | ----------- |
+| Log in / Sign up            | 1          | Jiamei      |
+| Navigating main menu        | 2          | Jiamei      |
+| Create Deck                 | 3          | Nerissa     |
+| Edit Deck                   | 4          | Jinuo       |
+| Study Flash Cards           | 5          | Kaiyang     |
+| Review Flash Cards          | 6          | Kaiyang     |
+| Taking Multiple-choice Quiz | 7          | Lan         |
+| Mastering Decks             | 8          | Lan/Nerissa |
 
 ---
 
