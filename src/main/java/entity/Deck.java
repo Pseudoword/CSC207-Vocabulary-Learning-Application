@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Deck {
@@ -23,5 +24,21 @@ public class Deck {
     public List<Vocabulary> getVocabularies() { return vocabularies; }
 
     public boolean isMastered() { return mastered; }
+
+    public void addWord(Vocabulary word) {
+        vocabularies.add(word);
+    }
+
+    public void removeWord(Vocabulary word) {
+        vocabularies.remove(word);
+    }
+
+    public void markAsMastered() {
+        this.mastered = true;
+    }
+
+    public void unmarkAsMastered() {
+        this.mastered = false;
+    }
 
 }
