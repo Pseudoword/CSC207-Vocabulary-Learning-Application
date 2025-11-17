@@ -1,3 +1,5 @@
+package main.java.entity;
+
 import java.util.List;
 
 public class MultipleChoiceQuestion {
@@ -19,7 +21,7 @@ public class MultipleChoiceQuestion {
         return choices;
     }
 
-    public String getAnswerIndex() {
+    public int getAnswerIndex() {
         return answerIndex;
     }
 
