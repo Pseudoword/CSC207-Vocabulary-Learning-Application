@@ -15,13 +15,24 @@ public class UpdateDeckDetailsInteractor implements UpdateDeckDetailsInputBounda
 
     @Override
     public void execute(UpdateDeckDetailsInputData inputData) {
-        final Deck deck = new Deck(inputData.getNewTitle(), inputData.getDescription());
+        final String newTitle = inputData.getNewTitle();
+        final Deck deck = new Deck(newTitle, inputData.getDescription());
 
-        userDataAccessObject.updateDeckDetails(deck);
+        if(newTitle.isEmpty()) {
+            userPresenter.prepareFailView("Deck title cannot be empty.");
+            return;
+        }
 
-        final UpdateDeckDetailsOutputData updateDeckDetailsoutputData =
+        if (userDataAccessObject.existsByTitle(newTitle)) {
+            userPresenter.prepareFailView("A deck with this title already exists.");
+            return;
+        }
+
+        userDataAccessObject.updateDeckDetails(inputData.getTitle(), deck);
+
+        final UpdateDeckDetailsOutputData outputData =
                 new UpdateDeckDetailsOutputData(deck.getTitle(), deck.getDescription());
-        userPresenter.prepareSuccessView(updateDeckDetailsoutputData);
+        userPresenter.prepareSuccessView(outputData);
     }
 
 }
