@@ -14,5 +14,9 @@ public interface UpdateDeckDetailsDataAccessInterface {
      */
     boolean existsByTitle(String title);
 
+    /**
+     * Updates the deck's title and description.
+     * @param oldTitle the current title of the deck to update
+     * @param deck the deck object containing the new title and description
+     */
     void updateDeckDetails(String oldTitle, Deck deck);
-}
