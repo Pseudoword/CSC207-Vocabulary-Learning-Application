@@ -13,7 +13,7 @@ public class InMemoryUserDataAccessObject implements UpdateDeckDetailsDataAccess
 
     private final Map<String, Deck> decks;
 
-    public InMemoryUserDataAccessObject(){
+    public InMemoryUserDataAccessObject() {
         this.decks = new HashMap<>();
     }
 
