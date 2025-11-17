@@ -13,7 +13,7 @@ public class Deck {
     public Deck(String title, String description) {
         this.title = title;
         this.description = description;
-        this.vocabularies = new List<Vocabulary>();
+        this.vocabularies = new ArrayList<>();
         this.mastered = false;
     }
 
