@@ -63,8 +63,11 @@ public class DictionaryAPIDataAccess {
             }
 
             // Check if the response contains suggestions (when word is not found)
-            if (responseArray.get(0) instanceof String) {
-                throw new RuntimeException("Word not found. Did you mean: " + responseArray.toString());
+            // If the first element is a String, it means the API returned suggestions, not definitions
+            final Object firstElement = responseArray.get(0);
+
+            if (firstElement instanceof String) {
+                throw new RuntimeException("Word not found: " + word);
             }
 
             final List<String> definitions = new ArrayList<>();
