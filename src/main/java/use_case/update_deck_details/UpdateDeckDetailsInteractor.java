@@ -21,7 +21,7 @@ public class UpdateDeckDetailsInteractor implements UpdateDeckDetailsInputBounda
         final String newTitle = inputData.getNewTitle();
         final Deck deck = new Deck(newTitle, inputData.getDescription());
 
-        if(newTitle.isEmpty()) {
+        if (newTitle.isEmpty()) {
             userPresenter.prepareFailView("Deck title cannot be empty.");
             return;
         }
