@@ -17,13 +17,17 @@ public class InMemoryUserDataAccessObject implements UpdateDeckDetailsDataAccess
         this.decks = new HashMap<>();
     }
 
+    public boolean existsByTitle(String title) {
+        return decks.containsKey(title);
+    }
+
     public void addDeck(Deck deck) {
         decks.put(deck.getTitle(), deck);
     }
 
     @Override
-    public void updateDeckDetails(Deck deck) {
+    public void updateDeckDetails(String oldTitle, Deck deck) {
         // Replace the old entry with the new deck details
-        decks.put(deck.getTitle(), deck);
+        decks.put(deck.getTitle(), decks.remove(oldTitle));
     }
 }
