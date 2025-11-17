@@ -2,6 +2,9 @@ package use_case.update_deck_details;
 
 import entity.Deck;
 
+/**
+ * The interactor for the Update Deck Details Use Case.
+ */
 public class UpdateDeckDetailsInteractor implements UpdateDeckDetailsInputBoundary {
 
     private final UpdateDeckDetailsDataAccessInterface userDataAccessObject;
