@@ -8,8 +8,9 @@ import entity.Deck;
 public interface UpdateDeckDetailsDataAccessInterface {
 
     /**
-     * Updates the system to record this deck's title and description.
-     * @param deck the deck whose title and description is to be updated
+     * Checks whether a deck with the given title exists.
+     * @param title the title to check
+     * @return true if a deck with this title exists, false otherwise
      */
     boolean existsByTitle(String title);
 
