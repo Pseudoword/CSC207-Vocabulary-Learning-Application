@@ -1,0 +1,29 @@
+package data_access;
+
+import entity.Deck;
+import use_case.update_deck_details.UpdateDeckDetailsDataAccessInterface;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * An extremely simple DAO for user data. This is only for testing the Update Deck Details use case.
+ */
+public class InMemoryUserDataAccessObject implements UpdateDeckDetailsDataAccessInterface {
+
+    private final Map<String, Deck> decks;
+
+    public InMemoryUserDataAccessObject(){
+        this.decks = new HashMap<>();
+    }
+
+    public void addDeck(Deck deck) {
+        decks.put(deck.getTitle(), deck);
+    }
+
+    @Override
+    public void updateDeckDetails(Deck deck) {
+        // Replace the old entry with the new deck details
+        decks.put(deck.getTitle(), deck);
+    }
+}
