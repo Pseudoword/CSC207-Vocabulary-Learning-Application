@@ -4,24 +4,23 @@ package interface_adapter.add_flashcard_to_deck;
  * The state for the Add Flashcard To Deck View Model.
  */
 public class AddFlashcardToDeckState {
-    private String deckName = "";
+    private String deckTitle = "";
     private String word = "";
     private String error = null;
     private String successMessage = null;
 
     public AddFlashcardToDeckState(AddFlashcardToDeckState copy) {
-        this.deckName = copy.deckName;
+        this.deckTitle = copy.deckTitle;
         this.word = copy.word;
         this.error = copy.error;
         this.successMessage = copy.successMessage;
     }
 
-    // Because of the previous copy constructor, the default constructor must be explicit.
     public AddFlashcardToDeckState() {}
 
-    public String getDeckName() { return deckName; }
+    public String getDeckTitle() { return deckTitle; }
 
-    public void setDeckName(String deckName) { this.deckName = deckName; }
+    public void setDeckTitle(String deckTitle) { this.deckTitle = deckTitle; }
 
     public String getWord() { return word; }
 

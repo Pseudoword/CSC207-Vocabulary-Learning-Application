@@ -7,12 +7,12 @@ public class AddFlashcardToDeckOutputData {
 
     private final String word;
     private final String definition;
-    private final String deckName;
+    private final String deckTitle;
 
-    public AddFlashcardToDeckOutputData(String word, String definition, String deckName) {
+    public AddFlashcardToDeckOutputData(String word, String definition, String deckTitle) {
         this.word = word;
         this.definition = definition;
-        this.deckName = deckName;
+        this.deckTitle = deckTitle;
     }
 
     public String getWord() {
@@ -23,7 +23,7 @@ public class AddFlashcardToDeckOutputData {
         return definition;
     }
 
-    public String getDeckName() {
-        return deckName;
+    public String getDeckTitle() {
+        return deckTitle;
     }
 }

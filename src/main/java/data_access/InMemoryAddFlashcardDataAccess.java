@@ -6,6 +6,9 @@ import use_case.add_flashcard_to_deck.AddFlashcardToDeckDataAccessInterface;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * In-memory implementation for testing purposes.
+ */
 public class InMemoryAddFlashcardDataAccess implements AddFlashcardToDeckDataAccessInterface {
     private final Map<String, Deck> decks = new HashMap<>();
     private final Map<String, String> dictionary = new HashMap<>();
@@ -25,7 +28,7 @@ public class InMemoryAddFlashcardDataAccess implements AddFlashcardToDeckDataAcc
         return dictionary.get(word);
     }
 
-    // Helper methods for test setup
+    // Helper methods to set up test data
     public void addDeck(Deck deck) {
         decks.put(deck.getTitle(), deck);
     }
@@ -34,4 +37,3 @@ public class InMemoryAddFlashcardDataAccess implements AddFlashcardToDeckDataAcc
         dictionary.put(word, definition);
     }
 }
-

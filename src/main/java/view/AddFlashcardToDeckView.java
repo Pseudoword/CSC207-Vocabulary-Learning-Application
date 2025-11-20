@@ -18,7 +18,7 @@ import java.beans.PropertyChangeListener;
  */
 public class AddFlashcardToDeckView extends JPanel implements ActionListener, PropertyChangeListener {
 
-    private final String viewName = "add flashcard";
+    private static final String viewName = "add flashcard";
     private final AddFlashcardToDeckViewModel viewModel;
 
     private final JTextField deckNameInputField = new JTextField(15);
@@ -54,7 +54,7 @@ public class AddFlashcardToDeckView extends JPanel implements ActionListener, Pr
                             final AddFlashcardToDeckState currentState = viewModel.getState();
 
                             controller.execute(
-                                    currentState.getDeckName(),
+                                    currentState.getDeckTitle(),
                                     currentState.getWord()
                             );
                         }
@@ -68,7 +68,7 @@ public class AddFlashcardToDeckView extends JPanel implements ActionListener, Pr
         deckNameInputField.getDocument().addDocumentListener(new DocumentListener() {
             private void documentListenerHelper() {
                 final AddFlashcardToDeckState currentState = viewModel.getState();
-                currentState.setDeckName(deckNameInputField.getText());
+                currentState.setDeckTitle(deckNameInputField.getText());
                 viewModel.setState(currentState);
             }
             @Override public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
@@ -104,7 +104,7 @@ public class AddFlashcardToDeckView extends JPanel implements ActionListener, Pr
         final AddFlashcardToDeckState state = (AddFlashcardToDeckState) evt.getNewValue();
 
         // Update text fields if state changes externally (e.g., cleared after success)
-        deckNameInputField.setText(state.getDeckName());
+        deckNameInputField.setText(state.getDeckTitle());
         wordInputField.setText(state.getWord());
 
         if (state.getError() != null) {

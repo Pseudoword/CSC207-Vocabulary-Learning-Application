@@ -13,16 +13,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Data Access Object that interacts with the Merriam-Webster Dictionary API.
+ */
 public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInterface {
 
     private static final String API_URL = "https://www.dictionaryapi.com/api/v3/references/learners/json";
-    private static final String API_KEY_ENV = "API_KEY";
-    private static final String DEFAULT_API_KEY = "b39169cd-e329-4bb0-9b46-31325235f40e";
-
+    private static final String API_KEY = "b39169cd-e329-4bb0-9b46-31325235f40e";
     private final Map<String, Deck> savedDecks = new HashMap<>();
 
     public DictionaryAPIDataAccess() {
-        // Initialize with a test deck for demonstration purposes
         savedDecks.put("Test Deck", new Deck("Test Deck", "A deck for testing"));
     }
 
@@ -38,44 +38,33 @@ public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInte
 
     @Override
     public String fetchDefinition(String word) {
-        // 1. Retrieve API Key (Check env var first, fallback to default)
-        String apiKey = System.getenv(API_KEY_ENV);
-        if (apiKey == null || apiKey.isEmpty()) {
-            apiKey = DEFAULT_API_KEY;
-        }
+        final OkHttpClient client = new OkHttpClient();
+        final String url = String.format("%s/%s?key=%s", API_URL, word, API_KEY);
 
-        // 2. Build the URL: base_url/word?key=api_key
-        String url = String.format("%s/%s?key=%s", API_URL, word, apiKey);
-
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url(url)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response);
+                throw new IOException("Unexpected API response code: " + response.code());
             }
 
-            // 3. Parse the Response
-            String responseBody = response.body().string();
-            JSONArray jsonArray = new JSONArray(responseBody);
+            final String responseBody = response.body().string();
+            final JSONArray jsonArray = new JSONArray(responseBody);
 
             if (jsonArray.isEmpty()) {
-                return null; // Word not found
+                return null;
             }
 
-            // The API can return an array of strings (suggestions) if the exact word isn't found
             if (jsonArray.get(0) instanceof String) {
-                return null; // We only want exact matches with definitions
+                return null;
             }
 
-            // 4. Extract definition from the first entry
-            // Structure: [{ "shortdef": ["definition 1", "definition 2"], ... }]
-            JSONObject firstEntry = jsonArray.getJSONObject(0);
+            final JSONObject firstEntry = jsonArray.getJSONObject(0);
 
             if (firstEntry.has("shortdef")) {
-                JSONArray shortDefs = firstEntry.getJSONArray("shortdef");
+                final JSONArray shortDefs = firstEntry.getJSONArray("shortdef");
                 if (!shortDefs.isEmpty()) {
                     return shortDefs.getString(0);
                 }

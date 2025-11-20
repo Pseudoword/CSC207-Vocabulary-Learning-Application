@@ -4,70 +4,55 @@ import entity.Deck;
 import entity.Vocabulary;
 
 /**
- * The Add Flashcard to Deck Interactor.
+ * The Interactor for adding a flashcard to a deck.
  */
 public class AddFlashcardToDeckInteractor implements AddFlashcardToDeckInputBoundary {
     private final AddFlashcardToDeckDataAccessInterface dataAccessObject;
     private final AddFlashcardToDeckOutputBoundary outputBoundary;
 
-    public AddFlashcardToDeckInteractor(AddFlashcardToDeckDataAccessInterface dataAccessInterface,
+    public AddFlashcardToDeckInteractor(AddFlashcardToDeckDataAccessInterface dataAccessObject,
                                         AddFlashcardToDeckOutputBoundary outputBoundary) {
-        this.dataAccessObject = dataAccessInterface;
+        this.dataAccessObject = dataAccessObject;
         this.outputBoundary = outputBoundary;
     }
 
     @Override
     public void execute(AddFlashcardToDeckInputData inputData) {
-        final String deckName = inputData.getDeckName();
-        final String wordText = inputData.getWord();
+        final String deckTitle = inputData.getDeckTitle();
+        final String word = inputData.getWord();
+        final Deck deck = dataAccessObject.getDeck(deckTitle);
 
-        // 1. Validate Input
-        if (deckName == null || deckName.isEmpty()) {
-            outputBoundary.prepareFailView("Deck name cannot be empty.");
+        if (deckTitle == null || deckTitle.isEmpty()) {
+            outputBoundary.prepareFailView("Deck title cannot be empty.");
             return;
         }
-        if (wordText == null || wordText.isEmpty()) {
+        if (word == null || word.isEmpty()) {
             outputBoundary.prepareFailView("Word cannot be empty.");
             return;
         }
-
-        // 2. Retrieve Deck
-        final Deck deck = dataAccessObject.getDeck(deckName);
         if (deck == null) {
-            outputBoundary.prepareFailView("Deck '" + deckName + "' does not exist.");
+            outputBoundary.prepareFailView("Deck '" + deckTitle + "' does not exist.");
             return;
         }
-
-        // 3. Fetch Definition
-        final String definition = dataAccessObject.fetchDefinition(wordText);
-        if (definition == null) {
-            outputBoundary.prepareFailView("Could not find a definition for '" + wordText + "'.");
-            return;
-        }
-
-        // 4. Create Business Entity (Vocabulary)
-        // Note: Flagged is initialized to false by default for new words
-        final Vocabulary newVocabulary = new Vocabulary(wordText, definition, false);
-
-        // 5. Update Entity (Deck)
-        // Check if word already exists in deck to prevent duplicates
         for (Vocabulary v : deck.getVocabularies()) {
-            if (v.getWord().equalsIgnoreCase(wordText)) {
-                outputBoundary.prepareFailView("Word '" + wordText + "' is already in the deck.");
+            if (v.getWord().equalsIgnoreCase(word)) {
+                outputBoundary.prepareFailView("Word '" + word + "' is already in the deck.");
                 return;
             }
         }
-        deck.addWord(newVocabulary);
 
-        // 6. Persist Data
-        dataAccessObject.save(deck);
+        final String definition = dataAccessObject.fetchDefinition(word);
 
-        // 7. Prepare Success View
-        final AddFlashcardToDeckOutputData outputData = new AddFlashcardToDeckOutputData(
-                newVocabulary.getWord(),
-                newVocabulary.getDefinition(),
-                deck.getTitle()
-        );
-        outputBoundary.prepareSuccessView(outputData);
+        if (definition == null) {
+            outputBoundary.prepareFailView("Could not find a definition for '" + word + "'.");
+        } else {
+            final Vocabulary newFlashcard = new Vocabulary(word, definition, false);
+
+            deck.addWord(newFlashcard);
+            dataAccessObject.save(deck);
+
+            final AddFlashcardToDeckOutputData outputData = new AddFlashcardToDeckOutputData(word, definition, deckTitle);
+            outputBoundary.prepareSuccessView(outputData);
+        }
     }
 }

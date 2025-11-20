@@ -21,7 +21,8 @@ public class AddFlashcardToDeckPresenter implements AddFlashcardToDeckOutputBoun
     @Override
     public void prepareSuccessView(AddFlashcardToDeckOutputData response) {
         final AddFlashcardToDeckState state = addFlashcardToDeckViewModel.getState();
-        state.setSuccessMessage("Successfully added '" + response.getWord() + "' to deck.");
+        state.setSuccessMessage("Successfully added '" + response.getWord() + "' to deck.\n" +
+                "Definition: '" + response.getDefinition() + "'");
         state.setError(null);
         state.setWord(""); // Clear the word input for the next entry
 

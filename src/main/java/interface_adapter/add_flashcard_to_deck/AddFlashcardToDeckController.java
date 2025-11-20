@@ -16,11 +16,11 @@ public class AddFlashcardToDeckController {
 
     /**
      * Executes the Add Flashcard To Deck Use Case.
-     * @param deckName the name of the deck to add to
+     * @param deckTitle the title of the deck to add to
      * @param word the word to be added
      */
-    public void execute(String deckName, String word) {
-        final AddFlashcardToDeckInputData inputData = new AddFlashcardToDeckInputData(deckName, word);
+    public void execute(String deckTitle, String word) {
+        final AddFlashcardToDeckInputData inputData = new AddFlashcardToDeckInputData(deckTitle, word);
         addFlashcardToDeckInteractor.execute(inputData);
     }
 }

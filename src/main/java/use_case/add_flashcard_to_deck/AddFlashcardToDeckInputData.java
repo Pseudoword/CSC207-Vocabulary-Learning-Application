@@ -5,19 +5,19 @@ package use_case.add_flashcard_to_deck;
  */
 public class AddFlashcardToDeckInputData {
 
-    private final String deckName;
     private final String word;
+    private final String deckTitle;
 
-    public AddFlashcardToDeckInputData(String deckName, String word) {
-        this.deckName = deckName;
+    public AddFlashcardToDeckInputData(String deckTitle, String word) {
         this.word = word;
+        this.deckTitle = deckTitle;
     }
 
-    String getDeckName() {
-        return deckName;
-    }
-
-    String getWord() {
+    public String getWord() {
         return word;
+    }
+
+    public String getDeckTitle() {
+        return deckTitle;
     }
 }
