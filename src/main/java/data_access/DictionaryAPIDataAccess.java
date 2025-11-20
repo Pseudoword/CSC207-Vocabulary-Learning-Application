@@ -70,7 +70,7 @@ public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInte
                 }
             }
 
-            return "No simple definition found.";
+            return null;
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
