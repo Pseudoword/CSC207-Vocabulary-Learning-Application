@@ -49,6 +49,7 @@ public class AddFlashcardToDeckView extends JPanel implements ActionListener, Pr
 
         addButton.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent evt) {
                         if (evt.getSource().equals(addButton)) {
                             final AddFlashcardToDeckState currentState = viewModel.getState();
