@@ -1,4 +1,4 @@
-package entity;
+package main.java.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ public class Deck {
     public Deck(String title, String description) {
         this.title = title;
         this.description = description;
-        this.vocabularies = new List<Vocabulary>();
+        this.vocabularies = new ArrayList<>();
         this.mastered = false;
     }
 
