@@ -6,17 +6,19 @@ public class Main {
     public static void main(String[] args) {
         AppBuilder appBuilder = new AppBuilder();
         JFrame application = appBuilder
-               .addLoginView()
+                .addLoginView()
                 .addSignupView()
                 .addLoggedInView()
                 .addSignupUseCase()
-               .addLoginUseCase()
+                .addLoginUseCase()
                 .addChangePasswordUseCase()
                 .addLogoutUseCase()
+                .addAddFlashcardToDeckView()
+                .addAddFlashcardToDeckUseCase()
                 .build();
 
        application.pack();
-      application.setLocationRelativeTo(null);
+       application.setLocationRelativeTo(null);
        application.setVisible(true);
     }
 }

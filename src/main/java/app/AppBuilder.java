@@ -29,6 +29,15 @@ import use_case.signup.SignupOutputBoundary;
 import view.LoggedInView;
 import view.LoginView;
 import view.SignupView;
+import data_access.DictionaryAPIDataAccess;
+import interface_adapter.ViewManagerModel;
+import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckController;
+import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckPresenter;
+import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckViewModel;
+import use_case.add_flashcard_to_deck.AddFlashcardToDeckInputBoundary;
+import use_case.add_flashcard_to_deck.AddFlashcardToDeckInteractor;
+import use_case.add_flashcard_to_deck.AddFlashcardToDeckOutputBoundary;
+import view.AddFlashcardToDeckView;
 import view.ViewManager;
 
 import javax.swing.*;
@@ -37,9 +46,10 @@ import java.awt.*;
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
     private final CardLayout cardLayout = new CardLayout();
-    final UserFactory userFactory = new UserFactory();
-    final ViewManagerModel viewManagerModel = new ViewManagerModel();
-    ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
+
+    private final UserFactory userFactory = new UserFactory();
+    private final ViewManagerModel viewManagerModel = new ViewManagerModel();
+    private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
@@ -48,7 +58,7 @@ public class AppBuilder {
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
 
     // DAO version using a shared external database
-    // final DBUserDataAccessObject userDataAccessObject = new DBUserDataAccessObject(userFactory);
+    //private final DictionaryAPIDataAccess dataAccessObject = new DictionaryAPIDataAccess();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -56,6 +66,8 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
+    private AddFlashcardToDeckViewModel addFlashcardToDeckView
+    private AddFlashcardToDeckView addFlashcardToDeckView;
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -129,6 +141,25 @@ public class AppBuilder {
 
         final LogoutController logoutController = new LogoutController(logoutInteractor);
         loggedInView.setLogoutController(logoutController);
+    public AppBuilder addAddFlashcardToDeckView() {
+        addFlashcardToDeckView = new AddFlashcardToDeckView(addFlashcardToDeckViewModel);
+        cardPanel.add(addFlashcardToDeckView, addFlashcardToDeckView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addAddFlashcardToDeckUseCase() {
+        final AddFlashcardToDeckOutputBoundary outputBoundary = new AddFlashcardToDeckPresenter(
+                viewManagerModel,
+                addFlashcardToDeckViewModel
+        );
+
+        final AddFlashcardToDeckInputBoundary interactor = new AddFlashcardToDeckInteractor(
+                dataAccessObject,
+                outputBoundary
+        );
+
+        final AddFlashcardToDeckController controller = new AddFlashcardToDeckController(interactor);
+        addFlashcardToDeckView.setController(controller);
         return this;
     }
 
@@ -143,6 +174,4 @@ public class AppBuilder {
 
         return application;
     }
-
-
 }
