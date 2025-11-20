@@ -1,3 +1,7 @@
+package main.java.entity;
+
+import main.java.entity.Vocabulary;
+
 import java.util.List;
 
 public class MultipleChoiceQuestion {
@@ -19,19 +23,12 @@ public class MultipleChoiceQuestion {
         return choices;
     }
 
-    public String getAnswerIndex() {
+    public int getAnswerIndex() {
         return answerIndex;
     }
 
     public boolean checkAnswer(int userChoiceIndex){
         return userChoiceIndex == answerIndex;
-    }
-
-    public void displayQuestion() {
-        System.out.println("What is the definition of: " + word.getWord() + "?");
-        for (int i = 0; i < choices.size(); i++) {
-            System.out.println((i + 1) + ". " + choices.get(i)); //prints options as "1. choice" "2. choice" etc.
-        }
     }
 
     public int getChoiceIndex(String userChoice) {
