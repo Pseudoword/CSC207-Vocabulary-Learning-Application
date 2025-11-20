@@ -20,7 +20,6 @@ public class AddFlashcardToDeckInteractor implements AddFlashcardToDeckInputBoun
     public void execute(AddFlashcardToDeckInputData inputData) {
         final String deckTitle = inputData.getDeckTitle();
         final String word = inputData.getWord();
-        final Deck deck = dataAccessObject.getDeck(deckTitle);
 
         if (deckTitle == null || deckTitle.isEmpty()) {
             outputBoundary.prepareFailView("Deck title cannot be empty.");
@@ -30,10 +29,14 @@ public class AddFlashcardToDeckInteractor implements AddFlashcardToDeckInputBoun
             outputBoundary.prepareFailView("Word cannot be empty.");
             return;
         }
+        
+        final Deck deck = dataAccessObject.getDeck(deckTitle);
+        
         if (deck == null) {
             outputBoundary.prepareFailView("Deck '" + deckTitle + "' does not exist.");
             return;
         }
+        
         for (Vocabulary v : deck.getVocabularies()) {
             if (v.getWord().equalsIgnoreCase(word)) {
                 outputBoundary.prepareFailView("Word '" + word + "' is already in the deck.");
