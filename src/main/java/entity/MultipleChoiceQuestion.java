@@ -1,4 +1,4 @@
-import entity.Vocabulary;
+package entity;
 
 import java.util.List;
 
