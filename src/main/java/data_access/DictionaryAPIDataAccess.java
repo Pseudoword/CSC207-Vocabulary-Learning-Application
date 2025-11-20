@@ -1,123 +1,91 @@
 package data_access;
 
-import okhttp3.*;
+import entity.Deck;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import use_case.add_flashcard_to_deck.AddFlashcardToDeckDataAccessInterface;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * DictionaryAPIDataAccess class for Merriam-Webster Learner's Dictionary API.
- */
-public class DictionaryAPIDataAccess {
+public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInterface {
+
     private static final String API_URL = "https://www.dictionaryapi.com/api/v3/references/learners/json";
-    private static final String CONTENT_TYPE = "Content-Type";
-    private static final String APPLICATION_JSON = "application/json";
     private static final String API_KEY_ENV = "API_KEY";
     private static final String DEFAULT_API_KEY = "b39169cd-e329-4bb0-9b46-31325235f40e";
 
-    /**
-     * Load API key from environment variable, or use default if not set.
-     * @return the API key
-     */
-    public static String getAPIKey() {
-        final String envKey = System.getenv(API_KEY_ENV);
-        return (envKey != null && !envKey.isEmpty()) ? envKey : DEFAULT_API_KEY;
+    private final Map<String, Deck> savedDecks = new HashMap<>();
+
+    public DictionaryAPIDataAccess() {
+        // Initialize with a test deck for demonstration purposes
+        savedDecks.put("Test Deck", new Deck("Test Deck", "A deck for testing"));
     }
 
-    /**
-     * Fetch word definition from Merriam-Webster Learner's Dictionary API.
-     * @param word the word to look up
-     * @return WordDefinition object containing the word and its definitions
-     * @throws RuntimeException if the word cannot be found or API call fails
-     */
-    public WordDefinition getWordDefinition(String word) {
-        final OkHttpClient client = new OkHttpClient().newBuilder().build();
-        final String apiKey = getAPIKey();
+    @Override
+    public Deck getDeck(String deckName) {
+        return savedDecks.get(deckName);
+    }
 
-        final Request request = new Request.Builder()
-                .url(String.format("%s/%s?key=%s", API_URL, word, apiKey))
-                .addHeader(CONTENT_TYPE, APPLICATION_JSON)
+    @Override
+    public void save(Deck deck) {
+        savedDecks.put(deck.getTitle(), deck);
+    }
+
+    @Override
+    public String fetchDefinition(String word) {
+        // 1. Retrieve API Key (Check env var first, fallback to default)
+        String apiKey = System.getenv(API_KEY_ENV);
+        if (apiKey == null || apiKey.isEmpty()) {
+            apiKey = DEFAULT_API_KEY;
+        }
+
+        // 2. Build the URL: base_url/word?key=api_key
+        String url = String.format("%s/%s?key=%s", API_URL, word, apiKey);
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
                 .build();
 
-        try {
-            final Response response = client.newCall(request).execute();
-
-            if (response.body() == null) {
-                throw new RuntimeException("Response body is null");
-            }
-
-            final String responseBodyString = response.body().string();
-
+        try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new RuntimeException("API request failed with status code: " + response.code());
+                throw new IOException("Unexpected code " + response);
             }
 
-            final JSONArray responseArray = new JSONArray(responseBodyString);
+            // 3. Parse the Response
+            String responseBody = response.body().string();
+            JSONArray jsonArray = new JSONArray(responseBody);
 
-            if (responseArray.isEmpty()) {
-                throw new RuntimeException("No definition found for word: " + word);
+            if (jsonArray.isEmpty()) {
+                return null; // Word not found
             }
 
-            // Check if the response contains suggestions (when word is not found)
-            // If the first element is a String, it means the API returned suggestions, not definitions
-            final Object firstElement = responseArray.get(0);
-
-            if (firstElement instanceof String) {
-                throw new RuntimeException("Word not found: " + word);
+            // The API can return an array of strings (suggestions) if the exact word isn't found
+            if (jsonArray.get(0) instanceof String) {
+                return null; // We only want exact matches with definitions
             }
 
-            final List<String> definitions = new ArrayList<>();
-            final JSONObject firstEntry = responseArray.getJSONObject(0);
+            // 4. Extract definition from the first entry
+            // Structure: [{ "shortdef": ["definition 1", "definition 2"], ... }]
+            JSONObject firstEntry = jsonArray.getJSONObject(0);
 
-            // Extract definitions from shortdef field
             if (firstEntry.has("shortdef")) {
-                final JSONArray shortDefs = firstEntry.getJSONArray("shortdef");
-                for (int i = 0; i < shortDefs.length(); i++) {
-                    definitions.add(shortDefs.getString(i));
+                JSONArray shortDefs = firstEntry.getJSONArray("shortdef");
+                if (!shortDefs.isEmpty()) {
+                    return shortDefs.getString(0);
                 }
             }
 
-            if (definitions.isEmpty()) {
-                throw new RuntimeException("No definitions found for word: " + word);
-            }
+            return "No simple definition found.";
 
-            return new WordDefinition(word, definitions);
-
-        } catch (IOException | JSONException event) {
-            throw new RuntimeException("Error fetching word definition: " + event.getMessage(), event);
-        }
-    }
-
-    /**
-     * Inner class to represent a word definition.
-     */
-    public static class WordDefinition {
-        private final String word;
-        private final List<String> definitions;
-
-        public WordDefinition(String word, List<String> definitions) {
-            this.word = word;
-            this.definitions = definitions;
-        }
-
-        public String getWord() {
-            return word;
-        }
-
-        public List<String> getDefinitions() {
-            return definitions;
-        }
-
-        @Override
-        public String toString() {
-            return "WordDefinition{" +
-                    "word='" + word + '\'' +
-                    ", definitions=" + definitions +
-                    '}';
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
