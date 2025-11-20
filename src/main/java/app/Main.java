@@ -4,14 +4,21 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        final AppBuilder appBuilder = new AppBuilder();
-        final JFrame application = appBuilder
+        AppBuilder appBuilder = new AppBuilder();
+        JFrame application = appBuilder
+                .addLoginView()
+                .addSignupView()
+                .addLoggedInView()
+                .addSignupUseCase()
+                .addLoginUseCase()
+                .addChangePasswordUseCase()
+                .addLogoutUseCase()
                 .addAddFlashcardToDeckView()
                 .addAddFlashcardToDeckUseCase()
                 .build();
 
-        application.pack();
-        application.setLocationRelativeTo(null);
-        application.setVisible(true);
+       application.pack();
+       application.setLocationRelativeTo(null);
+       application.setVisible(true);
     }
 }
