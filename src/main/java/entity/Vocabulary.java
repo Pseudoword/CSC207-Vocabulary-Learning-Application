@@ -4,13 +4,19 @@ public class Vocabulary {
 
     private final String word;
     private final String definition;
-    private Boolean flagged;
+    private boolean flagged;
 
 
     public Vocabulary(String word, String definition, Boolean flagged) {
         this.word = word;
         this.definition = definition;
         this.flagged = flagged;
+    }
+
+    public Vocabulary(String word, String definition) {
+        this.word = word;
+        this.definition = definition;
+        this.flagged = false;
     }
 
     public String getWord() {
@@ -21,8 +27,8 @@ public class Vocabulary {
         return definition;
     }
 
-    public void setFlagged(Boolean flagged) {this.flagged = flagged;}
+    public void setFlagged(boolean flagged) {this.flagged = flagged;}
 
-    public Boolean getFlagged() {return flagged;}
+    public boolean getFlagged() {return flagged;}
 
 }
