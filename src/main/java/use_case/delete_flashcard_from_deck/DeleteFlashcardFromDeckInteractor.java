@@ -25,6 +25,7 @@ public class DeleteFlashcardFromDeckInteractor implements DeleteFlashcardFromDec
             outputBoundary.prepareFailView("Deck title cannot be empty.");
             return;
         }
+
         if (word == null || word.isEmpty()) {
             outputBoundary.prepareFailView("Flashcard word cannot be empty.");
             return;
@@ -34,6 +35,11 @@ public class DeleteFlashcardFromDeckInteractor implements DeleteFlashcardFromDec
 
         if (deck == null) {
             outputBoundary.prepareFailView("Deck '" + deckTitle + "' does not exist.");
+            return;
+        }
+
+        if (!(deck.containsWord(word))) {
+            outputBoundary.prepareFailView("Flashcard with word '" + word + "' does not exist in deck '" + deckTitle + "'.");
             return;
         }
 
