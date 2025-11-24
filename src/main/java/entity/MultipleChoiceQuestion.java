@@ -1,5 +1,6 @@
 package entity;
 
+import entity.Vocabulary;
 import java.util.List;
 
 public class MultipleChoiceQuestion {
@@ -13,7 +14,7 @@ public class MultipleChoiceQuestion {
         this.answerIndex = answerIndex;
     }
 
-    public Vocabulary getWord() {
+    public String getWord() {
         return word;
     }
 
