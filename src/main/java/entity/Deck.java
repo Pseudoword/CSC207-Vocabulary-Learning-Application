@@ -20,7 +20,7 @@ public class Deck {
 
     public String getDescription() { return description; }
 
-    public List<Vocabulary> getVocabularies() { return vocabularies; }
+    public List<Vocabulary> getVocabularies() { return new ArrayList<>(vocabularies); }
 
     public boolean isMastered() { return mastered; }
 
@@ -30,6 +30,15 @@ public class Deck {
 
     public void removeWord(Vocabulary word) {
         vocabularies.remove(word);
+    }
+
+    public boolean containsWord(String word) {
+        for (Vocabulary v : vocabularies) {
+            if (v.getWord().equalsIgnoreCase(word)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void markAsMastered() {
