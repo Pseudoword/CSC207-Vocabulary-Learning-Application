@@ -10,14 +10,6 @@ public class MultipleChoiceQuizInteractor implements MultipleChoiceQuizInputBoun
     private MultipleChoiceQuizOutputBoundary presenter;
     private int currentIndex = 0;
 
-    public void MultipleChoiceQuizUseCase(List<MultipleChoiceQuestion> questions, MultipleChoiceQuizOutputBoundary presenter) {
-        this.questions = questions;
-        this.presenter = presenter;
-        if (!questions.isEmpty()) {
-            showCurrentQuestion();
-        }
-    }
-
     public MultipleChoiceQuizInteractor(List<MultipleChoiceQuestion> questions, MultipleChoiceQuizOutputBoundary presenter) {
         this.questions = questions;
         this.presenter = presenter;
