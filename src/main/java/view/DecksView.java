@@ -13,7 +13,7 @@ public class DecksView extends JPanel implements ActionListener {
     private final JButton reviewButton;
     private final JButton editButton;
     private final JButton backButton;
-    private final LoggedInView loggedInView; // 保存 Main Menu 引用
+    private final LoggedInView loggedInView;
 
     public DecksView(LoggedInView loggedInView) {
         this.loggedInView = loggedInView;
@@ -93,7 +93,7 @@ public class DecksView extends JPanel implements ActionListener {
             );
             if (confirm == JOptionPane.YES_OPTION) {
                 System.exit(0);
+            }
         }
-    }
     }
 }

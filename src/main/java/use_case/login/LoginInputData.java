@@ -20,5 +20,4 @@ public class LoginInputData {
     String getPassword() {
         return password;
     }
-
 }
