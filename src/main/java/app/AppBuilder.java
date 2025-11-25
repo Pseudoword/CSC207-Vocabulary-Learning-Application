@@ -173,6 +173,8 @@ public class AppBuilder {
 
         application.add(cardPanel);
 
+        new ViewManager(cardPanel, cardLayout, viewManagerModel);
+
         viewManagerModel.setState(signupView.getViewName());
         viewManagerModel.firePropertyChange();
 

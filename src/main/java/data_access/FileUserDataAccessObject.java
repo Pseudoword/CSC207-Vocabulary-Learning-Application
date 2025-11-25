@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * DAO for user data implemented using a File to persist the data.
+ */
 public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
@@ -25,59 +28,72 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
 
     private String currentUsername;
 
+    /**
+     * Construct this DAO for saving to and reading from a local file.
+     * @param csvPath the path of the file to save to
+     * @param userFactory factory for creating user objects
+     * @throws RuntimeException if there is an IOException when accessing the file
+     */
     public FileUserDataAccessObject(String csvPath, UserFactory userFactory) {
+
         csvFile = new File(csvPath);
         headers.put("username", 0);
         headers.put("password", 1);
 
-        if (!csvFile.exists() || csvFile.length() == 0) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile))) {
-                writer.write(HEADER);
-                writer.newLine();
-            } catch (IOException ex) {
+        if (csvFile.length() == 0) {
+            save();
+        }
+        else {
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
+                final String header = reader.readLine();
+
+                if (!header.equals(HEADER)) {
+                    throw new RuntimeException(String.format("header should be%n: %s%n but was:%n%s", HEADER, header));
+                }
+
+                String row;
+                while ((row = reader.readLine()) != null) {
+                    final String[] col = row.split(",");
+                    final String username = String.valueOf(col[headers.get("username")]);
+                    final String password = String.valueOf(col[headers.get("password")]);
+                    final User user = userFactory.create(username, password);
+                    accounts.put(username, user);
+                }
+            }
+            catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
-            final String header = reader.readLine();
-            if (!header.equals(HEADER)) {
-                throw new RuntimeException(String.format("header should be%n: %s%n but was:%n%s", HEADER, header));
-            }
-
-            String row;
-            while ((row = reader.readLine()) != null) {
-                if (row.isBlank()) continue;
-                final String[] col = row.split(",");
-                if (col.length < 2) continue;
-                final String username = col[headers.get("username")].trim();
-                final String password = col[headers.get("password")].trim();
-                if (username.isEmpty()) continue;
-                final User user = userFactory.create(username, password);
-                accounts.put(username, user);
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
         }
     }
 
     private void save() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile))) {
-            writer.write(HEADER);
+        final BufferedWriter writer;
+        try {
+            writer = new BufferedWriter(new FileWriter(csvFile));
+            writer.write(String.join(",", headers.keySet()));
             writer.newLine();
+
             for (User user : accounts.values()) {
-                writer.write(user.getName() + "," + user.getPassword());
+                final String line = String.format("%s,%s",
+                        user.getName(), user.getPassword());
+                writer.write(line);
                 writer.newLine();
             }
-        } catch (IOException ex) {
+
+            writer.close();
+
+        }
+        catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     }
 
     @Override
     public void save(User user) {
+
         accounts.put(user.getName(), user);
-        save();
+        this.save();
     }
 
     @Override
@@ -102,6 +118,7 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
 
     @Override
     public void changePassword(User user) {
+        // Replace the User object in the map
         accounts.put(user.getName(), user);
         save();
     }
