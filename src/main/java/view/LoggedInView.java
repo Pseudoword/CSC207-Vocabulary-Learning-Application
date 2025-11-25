@@ -13,6 +13,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class LoggedInView extends JPanel implements ActionListener, PropertyChangeListener {
+
     private final String viewName = "logged in";
     private final LoggedInViewModel loggedInViewModel;
     private ChangePasswordController changePasswordController = null;
@@ -123,7 +124,6 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
                 button.setBackground(new Color(219, 112, 147));
                 button.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(255, 105, 180));
                 button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -137,14 +137,10 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     public void actionPerformed(ActionEvent evt) {
         Object source = evt.getSource();
         if (source == decksButton) {
-            try {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                frame.setContentPane(new DecksView());
-                frame.revalidate();
-                frame.repaint();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error loading decks view: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            frame.setContentPane(new DecksView(this));
+            frame.revalidate();
+            frame.repaint();
         } else if (source == newDeckButton) {
             JOptionPane.showMessageDialog(this, "Use case 3 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (source == takeQuizButton) {
@@ -213,16 +209,11 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
                 return;
             }
             LoggedInState currentState = loggedInViewModel.getState();
-            changePasswordController.execute(
-                    currentState.getUsername(),
-                    newPassword
-            );
+            changePasswordController.execute(currentState.getUsername(), newPassword);
             passwordDialog.dispose();
         });
 
-        cancelButton.addActionListener(e -> {
-            passwordDialog.dispose();
-        });
+        cancelButton.addActionListener(e -> passwordDialog.dispose());
 
         buttonPanel.add(confirmButton);
         buttonPanel.add(cancelButton);
