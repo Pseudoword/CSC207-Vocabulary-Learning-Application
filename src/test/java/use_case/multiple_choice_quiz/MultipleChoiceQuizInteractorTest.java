@@ -2,8 +2,6 @@ package use_case.multiple_choice_quiz;
 
 import entity.MultipleChoiceQuestion;
 import entity.Vocabulary;
-import main.java.use_case.multiple_choice_quiz.MultipleChoiceQuizInteractor;
-import main.java.use_case.multiple_choice_quiz.MultipleChoiceQuizOutputBoundary;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
