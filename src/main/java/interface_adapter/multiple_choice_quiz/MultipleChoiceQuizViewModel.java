@@ -1,4 +1,4 @@
-package main.java.interface_adapter.multiple_choice_quiz;
+package interface_adapter.multiple_choice_quiz;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package main.java.view;
+package view;
 
-import main.java.interface_adapter.multiple_choice_quiz.MultipleChoiceQuizController;
-import main.java.interface_adapter.multiple_choice_quiz.MultipleChoiceQuizViewModel;
+import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizController;
+import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizViewModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

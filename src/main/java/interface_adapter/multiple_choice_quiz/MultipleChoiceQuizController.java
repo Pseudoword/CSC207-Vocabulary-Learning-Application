@@ -1,6 +1,6 @@
-package main.java.interface_adapter.multiple_choice_quiz;
+package interface_adapter.multiple_choice_quiz;
 
-import main.java.use_case.multiple_choice_quiz.MultipleChoiceQuizOutputBoundary;
+import use_case.multiple_choice_quiz.MultipleChoiceQuizOutputBoundary;
 
 public class MultipleChoiceQuizController {
     private final MultipleChoiceQuizState state;

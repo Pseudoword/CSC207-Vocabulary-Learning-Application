@@ -15,7 +15,7 @@ public class MultipleChoiceQuestion {
     }
 
     public String getWord() {
-        return word;
+        return word.getWord();
     }
 
     public List<String> getChoices() {
