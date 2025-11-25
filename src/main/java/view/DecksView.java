@@ -93,7 +93,7 @@ public class DecksView extends JPanel implements ActionListener {
             );
             if (confirm == JOptionPane.YES_OPTION) {
                 System.exit(0);
+            }
         }
-    }
     }
 }
