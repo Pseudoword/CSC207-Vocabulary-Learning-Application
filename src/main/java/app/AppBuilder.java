@@ -30,7 +30,6 @@ import view.LoggedInView;
 import view.LoginView;
 import view.SignupView;
 import data_access.DictionaryAPIDataAccess;
-import interface_adapter.ViewManagerModel;
 import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckController;
 import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckPresenter;
 import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckViewModel;
@@ -49,7 +48,7 @@ public class AppBuilder {
 
     private final UserFactory userFactory = new UserFactory();
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
-    private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
+
 
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
@@ -58,7 +57,7 @@ public class AppBuilder {
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
 
     // DAO version using a shared external database
-    //private final DictionaryAPIDataAccess dataAccessObject = new DictionaryAPIDataAccess();
+    private final DictionaryAPIDataAccess dataAccessObject = new DictionaryAPIDataAccess();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -66,8 +65,11 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
-    private AddFlashcardToDeckViewModel addFlashcardToDeckView
+    //private AddFlashcardToDeckViewModel addFlashcardToDeckView;
+    //private AddFlashcardToDeckView addFlashcardToDeckView;
+    private final AddFlashcardToDeckViewModel addFlashcardToDeckViewModel = new AddFlashcardToDeckViewModel();
     private AddFlashcardToDeckView addFlashcardToDeckView;
+
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -141,6 +143,8 @@ public class AppBuilder {
 
         final LogoutController logoutController = new LogoutController(logoutInteractor);
         loggedInView.setLogoutController(logoutController);
+        return this;
+    }
     public AppBuilder addAddFlashcardToDeckView() {
         addFlashcardToDeckView = new AddFlashcardToDeckView(addFlashcardToDeckViewModel);
         cardPanel.add(addFlashcardToDeckView, addFlashcardToDeckView.getViewName());
