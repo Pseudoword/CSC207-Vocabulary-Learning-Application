@@ -9,11 +9,13 @@ public class Main {
                 .addSignupView()
                 .addLoginView()
                 .addLoggedInView()
+                .addDecksView()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addChangePasswordUseCase()
                 .addLogoutUseCase()
                 .addAddFlashcardToDeckView()
+                .addMultipleChoiceQuizUseCase()
                 .addAddFlashcardToDeckUseCase()
                 .build();
 

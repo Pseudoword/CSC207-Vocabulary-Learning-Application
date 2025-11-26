@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -16,6 +17,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
     private final String viewName = "logged in";
     private final LoggedInViewModel loggedInViewModel;
+    private final ViewManagerModel viewManagerModel;
     private ChangePasswordController changePasswordController = null;
     private LogoutController logoutController = null;
     private final JLabel username;
@@ -25,8 +27,9 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     private final JButton changePasswordButton;
     private final JButton logoutButton;
 
-    public LoggedInView(LoggedInViewModel loggedInViewModel) {
+    public LoggedInView(LoggedInViewModel loggedInViewModel, ViewManagerModel viewManagerModel) {
         this.loggedInViewModel = loggedInViewModel;
+        this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel.addPropertyChangeListener(this);
 
         this.setLayout(new BorderLayout());
@@ -137,10 +140,8 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     public void actionPerformed(ActionEvent evt) {
         Object source = evt.getSource();
         if (source == decksButton) {
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            frame.setContentPane(new DecksView(this));
-            frame.revalidate();
-            frame.repaint();
+            viewManagerModel.setState("decks");
+            viewManagerModel.firePropertyChange();
         } else if (source == newDeckButton) {
             JOptionPane.showMessageDialog(this, "Use case 3 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (source == takeQuizButton) {

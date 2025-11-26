@@ -1,38 +1,31 @@
 package interface_adapter.multiple_choice_quiz;
 
-import use_case.multiple_choice_quiz.MultipleChoiceQuizOutputBoundary;
+import entity.MultipleChoiceQuestion;
+import use_case.multiple_choice_quiz.MultipleChoiceQuizInputBoundary;
+import use_case.multiple_choice_quiz.MultipleChoiceQuizInteractor;
+
+import java.util.List;
 
 public class MultipleChoiceQuizController {
-    private final MultipleChoiceQuizState state;
-    private final MultipleChoiceQuizOutputBoundary presenter;
 
-    public MultipleChoiceQuizController(MultipleChoiceQuizState state, MultipleChoiceQuizOutputBoundary presenter) {
-        this.state = state;
-        this.presenter = presenter;
-        showCurrentQuestion();
-    }
+    private final MultipleChoiceQuizInputBoundary interactor;
 
-    private void showCurrentQuestion() {
-        var question = state.getCurrentQuestion();
-        if (question != null) {
-            presenter.presentQuestion(question.getWord(), question.getChoices());
-        }
+    public MultipleChoiceQuizController(MultipleChoiceQuizInputBoundary interactor) {
+        this.interactor = interactor;
     }
 
     public void answerSelected(int index) {
-        state.selectAnswer(index);
-        var question = state.getCurrentQuestion();
-        if (!question.checkAnswer(index)) {
-            presenter.presentCorrectAnswer(question.getChoices().get(question.getAnswerIndex()));
-        }
+        interactor.selectAnswer(index);
     }
 
     public void nextPressed() {
-        state.nextQuestion();
-        if (state.isQuizFinished()) {
-            presenter.presentQuizFinished();
-        } else {
-            showCurrentQuestion();
+        interactor.nextQuestion();
+    }
+
+    public List<MultipleChoiceQuestion> getIncorrectQuestions() {
+        if (interactor instanceof MultipleChoiceQuizInteractor) {
+            return ((MultipleChoiceQuizInteractor) interactor).getIncorrectQuestions();
         }
+        return List.of();
     }
 }

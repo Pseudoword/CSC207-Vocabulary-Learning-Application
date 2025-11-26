@@ -7,14 +7,17 @@ public class MultipleChoiceQuizViewModel {
     private List<String> choices;
     private String correctAnswer;
     private boolean quizFinished = false;
+    private boolean hasMistakes = false;
 
     public String getCurrentWord() { return currentWord; }
     public List<String> getChoices() { return choices; }
     public String getCorrectAnswer() { return correctAnswer; }
     public boolean isQuizFinished() { return quizFinished; }
+    public boolean hasMistakes() { return hasMistakes; }
 
     public void setCurrentWord(String currentWord) { this.currentWord = currentWord; }
     public void setChoices(List<String> choices) { this.choices = choices; }
     public void setCorrectAnswer(String correctAnswer) { this.correctAnswer = correctAnswer; }
     public void setQuizFinished(boolean quizFinished) { this.quizFinished = quizFinished; }
+    public void setHasMistakes(boolean hasMistakes) { this.hasMistakes = hasMistakes; }
 }

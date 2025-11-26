@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.ViewManagerModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,11 +13,12 @@ public class DecksView extends JPanel implements ActionListener {
     private final JButton studyAllButton;
     private final JButton reviewButton;
     private final JButton editButton;
+    private final JButton takeQuizButton;
     private final JButton backButton;
-    private final LoggedInView loggedInView;
+    private final ViewManagerModel viewManagerModel;
 
-    public DecksView(LoggedInView loggedInView) {
-        this.loggedInView = loggedInView;
+    public DecksView(ViewManagerModel viewManagerModel) {
+        this.viewManagerModel = viewManagerModel;
 
         this.setPreferredSize(new Dimension(900, 700));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -43,10 +45,11 @@ public class DecksView extends JPanel implements ActionListener {
 
         studyAllButton = new JButton("Study All");
         reviewButton = new JButton("Review");
+        takeQuizButton = new JButton("Take Quiz");
         editButton = new JButton("Edit");
         backButton = new JButton("Exit");
 
-        JButton[] buttons = {studyAllButton, reviewButton, editButton, backButton};
+        JButton[] buttons = {studyAllButton, reviewButton, takeQuizButton, editButton, backButton};
         for (JButton b : buttons) {
             b.setPreferredSize(buttonSize);
             b.setMaximumSize(buttonSize);
@@ -65,6 +68,7 @@ public class DecksView extends JPanel implements ActionListener {
         buttonRow.setOpaque(false);
         buttonRow.add(studyAllButton);
         buttonRow.add(reviewButton);
+        buttonRow.add(takeQuizButton);
         this.add(buttonRow);
         this.add(Box.createVerticalStrut(20));
         this.add(editButton);
@@ -82,18 +86,23 @@ public class DecksView extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(this, "Use Case 5 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == reviewButton) {
             JOptionPane.showMessageDialog(this, "Use Case 6 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
+        } else if (src == takeQuizButton) {
+            String selectedDeck = deckList.getSelectedValue();
+            if (selectedDeck == null) {
+                JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
+            } else {
+                viewManagerModel.setState("MultipleChoiceQuiz");
+                viewManagerModel.firePropertyChange();
+            }
         } else if (src == editButton) {
             JOptionPane.showMessageDialog(this, "Use Case 4 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == backButton) {
-            int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "Are you sure you want to exit?",
-                    "Exit Confirmation",
-                    JOptionPane.YES_NO_OPTION
-            );
-            if (confirm == JOptionPane.YES_OPTION) {
-                System.exit(0);
-            }
+            viewManagerModel.setState("logged in");
+            viewManagerModel.firePropertyChange();
         }
+    }
+
+    public String getViewName() {
+        return viewName;
     }
 }

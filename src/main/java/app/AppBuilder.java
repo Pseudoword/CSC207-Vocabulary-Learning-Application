@@ -1,7 +1,9 @@
 package app;
 
 import data_access.FileUserDataAccessObject;
+import entity.MultipleChoiceQuestion;
 import entity.UserFactory;
+import entity.Vocabulary;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
@@ -11,6 +13,9 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizController;
+import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizPresenter;
+import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -23,12 +28,12 @@ import use_case.login.LoginOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
+import use_case.multiple_choice_quiz.MultipleChoiceQuizInteractor;
+import use_case.multiple_choice_quiz.MultipleChoiceQuizOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
-import view.LoggedInView;
-import view.LoginView;
-import view.SignupView;
+import view.*;
 import data_access.DictionaryAPIDataAccess;
 import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckController;
 import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckPresenter;
@@ -36,11 +41,11 @@ import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckViewModel;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckInputBoundary;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckInteractor;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckOutputBoundary;
-import view.AddFlashcardToDeckView;
-import view.ViewManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -65,10 +70,16 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
-    //private AddFlashcardToDeckViewModel addFlashcardToDeckView;
-    //private AddFlashcardToDeckView addFlashcardToDeckView;
     private final AddFlashcardToDeckViewModel addFlashcardToDeckViewModel = new AddFlashcardToDeckViewModel();
     private AddFlashcardToDeckView addFlashcardToDeckView;
+    private MultipleChoiceQuizViewModel multipleChoiceQuizViewModel;
+    private MultipleChoiceQuizController multipleChoiceQuizController;
+    private MultipleChoiceQuizInteractor multipleChoiceQuizInteractor;
+    private ArrayList<MultipleChoiceQuestion> originalQuestions;
+    private MultipleChoiceQuizView multipleChoiceQuizView;
+    private DecksView decksView;
+
+
 
 
     public AppBuilder() {
@@ -91,10 +102,80 @@ public class AppBuilder {
 
     public AppBuilder addLoggedInView() {
         loggedInViewModel = new LoggedInViewModel();
-        loggedInView = new LoggedInView(loggedInViewModel);
+        loggedInView = new LoggedInView(loggedInViewModel, viewManagerModel);
         cardPanel.add(loggedInView, loggedInView.getViewName());
         return this;
     }
+
+    public AppBuilder addDecksView() {
+        decksView = new DecksView(viewManagerModel);
+        cardPanel.add(decksView, decksView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addMultipleChoiceQuizUseCase() {
+        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
+
+        originalQuestions = new ArrayList<>(List.of( // Store as originalQuestions
+                new MultipleChoiceQuestion(
+                        new Vocabulary("apple", "A fruit that is typically red or green", false),
+                        List.of("A fruit that is typically red or green", "alt definition 1", "alt definition 2", "alt definition 3"),
+                        0
+                ),
+                new MultipleChoiceQuestion(
+                        new Vocabulary("dog", "A common domesticated animal", false),
+                        List.of("alt definition 1", "A common domesticated animal", "alt definition 2", "alt definition 3"),
+                        1
+                ),
+                new MultipleChoiceQuestion(
+                        new Vocabulary("red", "The color of fire and blood", false),
+                        List.of("The color of fire and blood", "alt definition 1", "alt definition 2", "alt definition 3"),
+                        0
+                )
+        ));
+
+        MultipleChoiceQuizOutputBoundary outputBoundary = new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
+        multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(originalQuestions, outputBoundary);
+        multipleChoiceQuizController = new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
+        multipleChoiceQuizView = new MultipleChoiceQuizView(
+                multipleChoiceQuizController,
+                multipleChoiceQuizViewModel,
+                viewManagerModel,
+                this
+        );
+
+        cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
+
+        return this;
+    }
+
+    public List<MultipleChoiceQuestion> getOriginalQuestions() {
+        return new ArrayList<>(originalQuestions);
+    }
+
+    public void createRetakeQuiz(List<MultipleChoiceQuestion> questions) {
+        cardPanel.remove(multipleChoiceQuizView);
+
+        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
+        MultipleChoiceQuizOutputBoundary outputBoundary = new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
+        multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(questions, outputBoundary);
+        multipleChoiceQuizController = new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
+
+        multipleChoiceQuizView = new MultipleChoiceQuizView(
+                multipleChoiceQuizController,
+                multipleChoiceQuizViewModel,
+                viewManagerModel,
+                this
+        );
+
+        cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
+        cardPanel.revalidate();
+        cardPanel.repaint();
+
+        viewManagerModel.setState("MultipleChoiceQuiz");
+        viewManagerModel.firePropertyChange();
+    }
+
 
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
@@ -166,6 +247,7 @@ public class AppBuilder {
         addFlashcardToDeckView.setController(controller);
         return this;
     }
+
 
     public JFrame build() {
         final JFrame application = new JFrame("Vocabulary Learning Application");

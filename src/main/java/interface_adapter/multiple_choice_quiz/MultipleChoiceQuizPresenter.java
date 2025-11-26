@@ -23,7 +23,8 @@ public class MultipleChoiceQuizPresenter implements MultipleChoiceQuizOutputBoun
     }
 
     @Override
-    public void presentQuizFinished() {
+    public void presentQuizFinished(boolean hasMistakes) {
         viewModel.setQuizFinished(true);
+        viewModel.setHasMistakes(hasMistakes);
     }
 }
