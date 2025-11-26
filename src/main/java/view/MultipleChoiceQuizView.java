@@ -148,6 +148,9 @@ public class MultipleChoiceQuizView extends JPanel {
         addButtonHoverEffect(mainMenuButton, new Color(255, 105, 180));
 
         mainMenuButton.addActionListener(e -> {
+            if (appBuilder != null) {
+                appBuilder.markCurrentDeckAsTaken();
+            }
             viewManagerModel.setState("logged in");
             viewManagerModel.firePropertyChange();
         });

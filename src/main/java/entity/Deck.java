@@ -7,13 +7,13 @@ public class Deck {
     private String title;
     private String description;
     private List<Vocabulary> vocabularies;
-    private boolean mastered;
+    private boolean quizTaken;
 
     public Deck(String title, String description) {
         this.title = title;
         this.description = description;
         this.vocabularies = new ArrayList<>();
-        this.mastered = false;
+        this.quizTaken = false;
     }
 
     public String getTitle() { return title;}
@@ -22,7 +22,25 @@ public class Deck {
 
     public List<Vocabulary> getVocabularies() { return vocabularies; }
 
-    public boolean isMastered() { return mastered; }
+    public boolean isMastered() {
+        if (!quizTaken || vocabularies.isEmpty()) {
+            return false;
+        }
+        for (Vocabulary vocab : vocabularies) {
+            if (vocab.isIncorrect()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void markQuizTaken() {
+        this.quizTaken = true;
+    }
+
+    public boolean hasBeenAttempted() {
+        return quizTaken;
+    }
 
     public void addWord(Vocabulary word) {
         vocabularies.add(word);
@@ -31,13 +49,4 @@ public class Deck {
     public void removeWord(Vocabulary word) {
         vocabularies.remove(word);
     }
-
-    public void markAsMastered() {
-        this.mastered = true;
-    }
-
-    public void unmarkAsMastered() {
-        this.mastered = false;
-    }
-
 }

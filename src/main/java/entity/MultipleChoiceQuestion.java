@@ -28,4 +28,8 @@ public class MultipleChoiceQuestion {
     public boolean checkAnswer(int userChoiceIndex){
         return userChoiceIndex == answerIndex;
     }
+
+    public Vocabulary getVocabularyObject() {
+        return word;
+    }
 }
