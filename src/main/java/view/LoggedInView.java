@@ -23,7 +23,6 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     private final JLabel username;
     private final JButton decksButton;
     private final JButton newDeckButton;
-    private final JButton takeQuizButton;
     private final JButton changePasswordButton;
     private final JButton logoutButton;
 
@@ -64,9 +63,8 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
         decksButton = createPinkButton("Decks", buttonSize, buttonFont);
         newDeckButton = createPinkButton("New Deck", buttonSize, buttonFont);
-        takeQuizButton = createPinkButton("Take Quiz", buttonSize, buttonFont);
 
-        JButton[] mainButtons = {decksButton, newDeckButton, takeQuizButton};
+        JButton[] mainButtons = {decksButton, newDeckButton};
         for (JButton b : mainButtons) {
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
             b.addActionListener(this);
@@ -77,8 +75,6 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         centerPanel.add(Box.createVerticalStrut(25));
         centerPanel.add(newDeckButton);
         centerPanel.add(Box.createVerticalStrut(25));
-        centerPanel.add(takeQuizButton);
-        centerPanel.add(Box.createVerticalGlue());
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBackground(new Color(255, 240, 245));
@@ -144,8 +140,6 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
             viewManagerModel.firePropertyChange();
         } else if (source == newDeckButton) {
             JOptionPane.showMessageDialog(this, "Use case 3 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
-        } else if (source == takeQuizButton) {
-            JOptionPane.showMessageDialog(this, "Use case 7 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (source == changePasswordButton) {
             showChangePasswordDialog();
         } else if (source == logoutButton) {
