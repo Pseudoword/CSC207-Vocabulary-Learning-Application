@@ -31,20 +31,20 @@ public class MultipleChoiceQuizInteractor implements MultipleChoiceQuizInputBoun
         boolean correct = question.checkAnswer(selectedIndex);
         if (!correct) {
             incorrectQuestions.add(question);
+            question.getVocabularyObject().markAsIncorrect();
+        } else {
+            question.getVocabularyObject().markAsCorrect();
         }
     }
 
     @Override
     public void nextQuestion() {
         currentIndex++;
-        if (currentIndex >= questions.size()) {
-            presenter.presentQuizFinished(!incorrectQuestions.isEmpty());
-        } else {
-            showCurrentQuestion();
+        if (currentIndex >= questions.size()) {presenter.presentQuizFinished(!incorrectQuestions.isEmpty());
+        } else {showCurrentQuestion();
         }
     }
 
-    public List<MultipleChoiceQuestion> getIncorrectQuestions() {
-        return new ArrayList<>(incorrectQuestions);
+    public List<MultipleChoiceQuestion> getIncorrectQuestions() {return new ArrayList<>(incorrectQuestions);
     }
 }
