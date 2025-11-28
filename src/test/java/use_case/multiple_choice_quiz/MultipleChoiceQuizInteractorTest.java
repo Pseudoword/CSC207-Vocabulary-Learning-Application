@@ -192,4 +192,53 @@ class MultipleChoiceQuizInteractorTest {
 
         assertFalse(hasMistakesResult[0]);
     }
+
+    @Test
+    void getIncorrectQuestionsTest() {
+        Vocabulary vocab1 = new Vocabulary("Dog", "An animal", false);
+        Vocabulary vocab2 = new Vocabulary("Cat", "Another animal", false);
+        Vocabulary vocab3 = new Vocabulary("Bird", "A flying animal", false);
+
+        MultipleChoiceQuestion q1 = new MultipleChoiceQuestion(vocab1, Arrays.asList("An animal", "A plant"), 0);
+        MultipleChoiceQuestion q2 = new MultipleChoiceQuestion(vocab2, Arrays.asList("Another animal", "A tool"), 0);
+        MultipleChoiceQuestion q3 = new MultipleChoiceQuestion(vocab3, Arrays.asList("A flying animal", "A car"), 0);
+
+        MultipleChoiceQuizOutputBoundary presenter = new MultipleChoiceQuizOutputBoundary() {
+            @Override
+            public void presentQuestion(String word, List<String> choices) {
+            }
+
+            @Override
+            public void presentCorrectAnswer(String correctAnswer) {
+            }
+
+            @Override
+            public void presentQuizFinished(boolean hasMistakes) {
+            }
+        };
+
+        MultipleChoiceQuizInteractor interactor = new MultipleChoiceQuizInteractor(
+                List.of(q1, q2, q3), presenter
+        );
+
+        // Answer first question incorrectly
+        interactor.selectAnswer(1);
+
+        // Answer second question correctly
+        interactor.nextQuestion();
+        interactor.selectAnswer(0);
+
+        // Answer third question incorrectly
+        interactor.nextQuestion();
+        interactor.selectAnswer(1);
+
+        // Get incorrect questions
+        List<MultipleChoiceQuestion> incorrectQuestions = interactor.getIncorrectQuestions();
+
+        // Should have 2 incorrect questions (q1 and q3)
+        assertEquals(2, incorrectQuestions.size());
+        assertTrue(incorrectQuestions.contains(q1));
+        assertFalse(incorrectQuestions.contains(q2));
+        assertTrue(incorrectQuestions.contains(q3));
+    }
 }
