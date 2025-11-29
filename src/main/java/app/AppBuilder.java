@@ -82,12 +82,50 @@ public class AppBuilder {
     private MultipleChoiceQuizView multipleChoiceQuizView;
     private DecksView decksView;
     private Deck currentDeck;
+    private List<Deck> allDecks;
 
 
 
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
+        initializeDecks();
+    }
+
+    private void initializeDecks() {
+        allDecks = new ArrayList<>();
+
+        Deck deck1 = new Deck("Deck 1", "Sample deck 1");
+        deck1.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
+        deck1.addWord(new Vocabulary("dog", "A common domesticated animal", false));
+
+        Deck deck2 = new Deck("Deck 2", "Sample deck 2");
+        deck2.addWord(new Vocabulary("red", "The color of fire and blood", false));
+        deck2.addWord(new Vocabulary("cat", "A small domesticated feline", false));
+
+        Deck deck3 = new Deck("Deck 3", "Sample deck 3");
+        deck3.addWord(new Vocabulary("house", "A building for human habitation", false));
+
+        allDecks.add(deck1);
+        allDecks.add(deck2);
+        allDecks.add(deck3);
+    }
+
+    public List<Deck> getAllDecks() {
+        return allDecks;
+    }
+
+    public void refreshDecksView() {
+        // Remove old DecksView
+        cardPanel.remove(decksView);
+
+        // Create new DecksView (will use the same deck instances from allDecks)
+        decksView = new DecksView(viewManagerModel, this);
+        cardPanel.add(decksView, decksView.getViewName());
+
+        // Refresh the panel
+        cardPanel.revalidate();
+        cardPanel.repaint();
     }
 
     public AppBuilder addSignupView() {
@@ -145,7 +183,7 @@ public class AppBuilder {
 
         MultipleChoiceQuizOutputBoundary outputBoundary = new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
         multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(questions, outputBoundary);
-        multipleChoiceQuizController = new MultipleChoiceQuizController(multipleChoiceQuizInteractor, outputBoundary);
+        multipleChoiceQuizController = new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
         multipleChoiceQuizView = new MultipleChoiceQuizView(
                 multipleChoiceQuizController,
                 multipleChoiceQuizViewModel,
@@ -154,6 +192,8 @@ public class AppBuilder {
         );
 
         cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
+        multipleChoiceQuizController.startQuiz(deck.getTitle());
+        multipleChoiceQuizView.refreshView();
 
         return this;
     }
@@ -190,7 +230,7 @@ public class AppBuilder {
 
         // Create new controller
         multipleChoiceQuizController =
-                new MultipleChoiceQuizController(multipleChoiceQuizInteractor, outputBoundary);
+                new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
 
         // Create new view
         multipleChoiceQuizView = new MultipleChoiceQuizView(
@@ -206,6 +246,9 @@ public class AppBuilder {
         // Revalidate and repaint the card panel
         cardPanel.revalidate();
         cardPanel.repaint();
+
+        multipleChoiceQuizController.startQuiz(currentDeck != null ? currentDeck.getTitle() : "");
+        multipleChoiceQuizView.refreshView();
 
         // Navigate to the new quiz
         viewManagerModel.setState("MultipleChoiceQuiz");
