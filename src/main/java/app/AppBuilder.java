@@ -4,6 +4,9 @@ import data_access.FileUserDataAccessObject;
 import entity.MultipleChoiceQuestion;
 import entity.UserFactory;
 import entity.Vocabulary;
+import interface_adapter.StudyFlashCards.StudyFlashCardsController;
+import interface_adapter.StudyFlashCards.StudyFlashCardsPresenter;
+import interface_adapter.StudyFlashCards.StudyFlashCardsViewModel;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
@@ -19,6 +22,10 @@ import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import use_case.StudyFlashCards.StudyFlashCardsDataAccessInterface;
+import use_case.StudyFlashCards.StudyFlashCardsInputBoundary;
+import use_case.StudyFlashCards.StudyFlashCardsInteractor;
+import use_case.StudyFlashCards.StudyFlashCardsOutputBoundary;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -78,8 +85,12 @@ public class AppBuilder {
     private ArrayList<MultipleChoiceQuestion> originalQuestions;
     private MultipleChoiceQuizView multipleChoiceQuizView;
     private DecksView decksView;
-
-
+    private StudyFlashCardsViewModel studyFlashCardsViewModel;
+    private StudyFlashCardsDataAccessInterface studyFlashCardsDataAccessInterface;
+    private StudyFlashCardsOutputBoundary StudyFlashCardsOutputBoundary;
+    private StudyFlashCardsInteractor StudyFlashCardsInteractor;
+    private StudyFlashCardsView studyFlashCardsView;
+    private StudyFlashCardsController studyFlashCardsController;
 
 
     public AppBuilder() {
@@ -108,7 +119,12 @@ public class AppBuilder {
     }
 
     public AppBuilder addDecksView() {
-        decksView = new DecksView(viewManagerModel);
+//        final StudyFlashCardsOutputBoundary outputBoundary = new StudyFlashCardsPresenter(viewManagerModel, studyFlashCardsViewModel);///
+//        final StudyFlashCardsInputBoundary interactor = new StudyFlashCardsInteractor(userDataAccessObject, outputBoundary);///
+//        StudyFlashCardsController controller = new StudyFlashCardsController(interactor);///
+//        studyFlashCardsView.setController(controller);///
+
+        decksView = new DecksView(viewManagerModel);///studyFlashCardsController
         cardPanel.add(decksView, decksView.getViewName());
         return this;
     }
@@ -245,6 +261,28 @@ public class AppBuilder {
 
         final AddFlashcardToDeckController controller = new AddFlashcardToDeckController(interactor);
         addFlashcardToDeckView.setController(controller);
+        return this;
+    }
+
+    public AppBuilder addStudyFlashCardsView() {
+        studyFlashCardsViewModel = new StudyFlashCardsViewModel();
+        final StudyFlashCardsOutputBoundary outputBoundary = new StudyFlashCardsPresenter(viewManagerModel, studyFlashCardsViewModel);
+        final StudyFlashCardsInputBoundary interactor = new StudyFlashCardsInteractor(userDataAccessObject, outputBoundary);
+        StudyFlashCardsController controller = new StudyFlashCardsController(interactor);
+        studyFlashCardsView = new StudyFlashCardsView(studyFlashCardsViewModel, controller, viewManagerModel);//takes in studyFlashCardsViewModel);
+
+        cardPanel.add(studyFlashCardsView, studyFlashCardsView.getViewName());
+        cardPanel.revalidate();
+        cardPanel.repaint();
+        return this;
+    }
+
+    public AppBuilder addStudyFlashCardsUseCase() {
+        final StudyFlashCardsOutputBoundary outputBoundary = new StudyFlashCardsPresenter(viewManagerModel, studyFlashCardsViewModel);
+        final StudyFlashCardsInputBoundary interactor = new StudyFlashCardsInteractor(userDataAccessObject, outputBoundary);//what do i put here
+        StudyFlashCardsController controller = new StudyFlashCardsController(interactor);
+        studyFlashCardsView.setController(controller);
+
         return this;
     }
 

@@ -40,4 +40,8 @@ public class Deck {
         this.mastered = false;
     }
 
+    public boolean isEmpty() {
+        return vocabularies.isEmpty();
+    }
+
 }

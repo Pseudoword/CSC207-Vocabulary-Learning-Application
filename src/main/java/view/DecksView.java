@@ -1,6 +1,9 @@
 package view;
 
+import interface_adapter.StudyFlashCards.StudyFlashCardsController;
 import interface_adapter.ViewManagerModel;
+import use_case.StudyFlashCards.StudyFlashCardsInputData;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,9 +19,11 @@ public class DecksView extends JPanel implements ActionListener {
     private final JButton takeQuizButton;
     private final JButton backButton;
     private final ViewManagerModel viewManagerModel;
+    //private final StudyFlashCardsController studyFlashCardsController;///////
 
-    public DecksView(ViewManagerModel viewManagerModel) {
+    public DecksView(ViewManagerModel viewManagerModel) {/////, StudyFlashCardsController studyFlashCardsController
         this.viewManagerModel = viewManagerModel;
+        //this.studyFlashCardsController = studyFlashCardsController;//////
 
         this.setPreferredSize(new Dimension(900, 700));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -120,7 +125,17 @@ public class DecksView extends JPanel implements ActionListener {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
 
         if (src == studyAllButton) {
-            JOptionPane.showMessageDialog(this, "Use Case 5 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
+            String selectedDeck = deckList.getSelectedValue();
+            if (selectedDeck == null) {
+                JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
+            } else {
+                //studyFlashCardsController.execute(selectedDeck); ///////////////
+
+                //StudyFlashCardsInputData inputData = new StudyFlashCardsInputData("testDeck");/////////////////////
+                viewManagerModel.setState("StudyFlashCards");
+                viewManagerModel.firePropertyChange();
+            }
+//            JOptionPane.showMessageDialog(this, "Use Case 5 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == reviewButton) {
             JOptionPane.showMessageDialog(this, "Use Case 6 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == takeQuizButton) {

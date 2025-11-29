@@ -1,7 +1,10 @@
 package data_access;
 
+import entity.Deck;
 import entity.User;
 import entity.UserFactory;
+import entity.Vocabulary;
+import use_case.StudyFlashCards.StudyFlashCardsDataAccessInterface;
 import use_case.change_password.ChangePasswordUserDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
@@ -18,7 +21,8 @@ import java.util.Map;
 public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
-        LogoutUserDataAccessInterface {
+        LogoutUserDataAccessInterface,
+        StudyFlashCardsDataAccessInterface {
 
     private static final String HEADER = "username,password";
 
@@ -121,5 +125,18 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         // Replace the User object in the map
         accounts.put(user.getName(), user);
         save();
+    }
+
+    @Override
+    public Deck getDeck(String deckName) {
+        //temp
+        Deck testDeck = new Deck("Temporary Test Deck", "description");
+        Vocabulary vocab1 = new Vocabulary("word1", "defn1", false);
+        Vocabulary vocab2 = new Vocabulary("word2", "defn2", false);
+        Vocabulary vocab3 = new Vocabulary("word3", "defn3", false);
+        testDeck.addWord(vocab1);
+        testDeck.addWord(vocab2);
+        testDeck.addWord(vocab3);
+        return testDeck;
     }
 }
