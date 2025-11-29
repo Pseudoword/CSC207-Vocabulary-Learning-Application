@@ -269,7 +269,7 @@ public class AppBuilder {
         final StudyFlashCardsOutputBoundary outputBoundary = new StudyFlashCardsPresenter(viewManagerModel, studyFlashCardsViewModel);
         final StudyFlashCardsInputBoundary interactor = new StudyFlashCardsInteractor(userDataAccessObject, outputBoundary);
         StudyFlashCardsController controller = new StudyFlashCardsController(interactor);
-        studyFlashCardsView = new StudyFlashCardsView(studyFlashCardsViewModel, controller, viewManagerModel);//takes in studyFlashCardsViewModel);
+        studyFlashCardsView = new StudyFlashCardsView(studyFlashCardsViewModel, controller, viewManagerModel);
 
         cardPanel.add(studyFlashCardsView, studyFlashCardsView.getViewName());
         cardPanel.revalidate();

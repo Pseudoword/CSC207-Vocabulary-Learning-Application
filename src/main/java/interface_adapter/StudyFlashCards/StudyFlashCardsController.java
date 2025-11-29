@@ -3,7 +3,6 @@ package interface_adapter.StudyFlashCards;
 import use_case.StudyFlashCards.StudyFlashCardsInputBoundary;
 import use_case.StudyFlashCards.StudyFlashCardsInputData;
 
-// used in view
 public class StudyFlashCardsController {
     private final StudyFlashCardsInputBoundary studyFlashCardsInputBoundary;
 

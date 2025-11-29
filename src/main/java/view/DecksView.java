@@ -19,11 +19,9 @@ public class DecksView extends JPanel implements ActionListener {
     private final JButton takeQuizButton;
     private final JButton backButton;
     private final ViewManagerModel viewManagerModel;
-    //private final StudyFlashCardsController studyFlashCardsController;///////
 
-    public DecksView(ViewManagerModel viewManagerModel) {/////, StudyFlashCardsController studyFlashCardsController
+    public DecksView(ViewManagerModel viewManagerModel) {
         this.viewManagerModel = viewManagerModel;
-        //this.studyFlashCardsController = studyFlashCardsController;//////
 
         this.setPreferredSize(new Dimension(900, 700));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -130,12 +128,10 @@ public class DecksView extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
             } else {
                 //studyFlashCardsController.execute(selectedDeck); ///////////////
-
                 //StudyFlashCardsInputData inputData = new StudyFlashCardsInputData("testDeck");/////////////////////
                 viewManagerModel.setState("StudyFlashCards");
                 viewManagerModel.firePropertyChange();
             }
-//            JOptionPane.showMessageDialog(this, "Use Case 5 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == reviewButton) {
             JOptionPane.showMessageDialog(this, "Use Case 6 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == takeQuizButton) {

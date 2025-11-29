@@ -4,5 +4,4 @@ import entity.Deck;
 
 public interface StudyFlashCardsDataAccessInterface {
     Deck getDeck(String deckName);
-
 }

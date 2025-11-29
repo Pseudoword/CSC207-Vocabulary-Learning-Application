@@ -29,9 +29,6 @@ public class StudyFlashCardsInteractor implements StudyFlashCardsInputBoundary {
             this.isWord = true;
             presentCard();
         }
-        //System.out.println(inputData.getDeckName() + "interactor");
-        //System.out.println(deck.getVocabularies().get(1) + "interactor");
-
     }
 
     public void next(StudyFlashCardsInputData inputData) {
@@ -68,7 +65,7 @@ public class StudyFlashCardsInteractor implements StudyFlashCardsInputBoundary {
 
     @Override
     public void switchToReviewView() {
-        // empty for now
+        // not in use currently
     }
 
     private void presentCard() {
@@ -83,7 +80,6 @@ public class StudyFlashCardsInteractor implements StudyFlashCardsInputBoundary {
                         diplayText
                 );
         outputBoundary.prepareSuccessView(output);
-        //System.out.println(output.getWord() + "interactor");
     }
 
 }

@@ -15,29 +15,19 @@ import java.beans.PropertyChangeListener;
 //import DecksView
 
 public class StudyFlashCardsView extends JPanel implements ActionListener, PropertyChangeListener {
-    private int index = 0;
-    private boolean flag;
-    private boolean isWord;
-    private String  word;
-    private String defn;
 
     private final JButton defnButton;
     private final JButton nextButton;
     private final JButton prevButton;
     private final JButton flagButton;
 
-    private Boolean showWord = true;
-
-    private JFrame frame;
 
     private StudyFlashCardsController controller;
     private StudyFlashCardsViewModel viewModel;
     private JButton mainMenuButton;
     private final ViewManagerModel viewManagerModel;
 
-
     private JLabel errorLabel;
-    private JLabel flaggedLabel;
     private JLabel outputLabel;
     private final int screenWidth = 900;
     private final int screenHeight = 700;
@@ -49,18 +39,12 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
         this.controller = controller;
         this.viewManagerModel = viewManagerModel;
         viewModel.addPropertyChangeListener(this);
-        this.deckName = "abc"; ////////////////////////////////////requries fixing
+        this.deckName = "testDeck"; ////////////////////////////////////requries fixing
         StudyFlashCardsInputData inputData = new StudyFlashCardsInputData(deckName);
 
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(new Color(255, 240, 245));
         this.setLayout(new BorderLayout(0, 20));
-
-
-//        frame = new JFrame("Study FlashCards");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setSize(screenWidth, screenHeight);
-//        frame.setLayout(new BorderLayout());
 
         //other panels
         JPanel panel1 = new JPanel();
@@ -81,22 +65,11 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
         panel4.setPreferredSize(new Dimension(200, 200));
         panel5.setPreferredSize(new Dimension(200, 200));
 
-/// ///////////////////////////maybe not needed//////////////////////////
-//        frame.add(panel1, BorderLayout.NORTH);
-//        frame.add(panel2, BorderLayout.WEST);
-//        frame.add(panel3, BorderLayout.EAST);
-//        frame.add(panel4, BorderLayout.SOUTH);
-//        frame.add(panel5, BorderLayout.CENTER);
-/// ///////////////////////////maybe not needed//////////////////////////
         //main panel
         panel5.setLayout(new FlowLayout());
         JLabel title = new JLabel("Study Flash Cards");
         title.setFont(new Font("Arial", Font.BOLD, 60));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-
-        //Dimension buttonSize = new Dimension(150, 40);
-        Font buttonFont = new Font("Arial", Font.PLAIN, 30);
 
         defnButton = new JButton("Definition");
         defnButton.setFont(new Font("Arial", Font.BOLD, 18));
@@ -138,8 +111,6 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
         errorLabel.setFont(new Font("Arial", Font.BOLD, 40));
         errorLabel.setVisible(false);
 
-
-
         addButtonHoverEffect(mainMenuButton, new Color(255, 105, 180));
         addButtonHoverEffect(defnButton, new Color(255, 105, 180));
         addButtonHoverEffect(nextButton, new Color(255, 105, 180));
@@ -163,13 +134,10 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
         this.add(panel3, BorderLayout.EAST);
         this.add(panel4, BorderLayout.SOUTH);
         this.add(panel5, BorderLayout.CENTER);
-        /// ////////////////////////////////////////////////////////// printing word to screen
 
         outputLabel = new JLabel((""),  SwingConstants.CENTER);
         outputLabel.setFont(new Font("Arial", Font.BOLD, 40));
         panel5.add(outputLabel);
-        /// //////////////////////////////////////////////////////////
-
         controller.execute(deckName);
 
     }
@@ -209,7 +177,7 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
 
         } else if (source == flagButton) {
             controller.flag(deckName);
-            System.out.println(viewModel.getFlag()); //works fine :)
+            System.out.println(viewModel.getFlag());
         }
     }
 
@@ -219,17 +187,16 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        //final StudyFlashCardsState state = (StudyFlashCardsState) evt.getNewValue();
         if (evt.getPropertyName().equals("state")) {
-            StudyFlashCardsState state1 = viewModel.getState();
-            if (state1.getError() != null) {
+            StudyFlashCardsState state = viewModel.getState();
+            if (state.getError() != null) {
                 nextButton.setVisible(false);
                 prevButton.setVisible(false);
                 flagButton.setVisible(false);
                 defnButton.setVisible(false);
                 errorLabel.setVisible(true);
             }else {
-                outputLabel.setText(state1.getDisplayText()); ///////////////// here is why word is dispalyed
+                outputLabel.setText(state.getDisplayText());
                 revalidate();
                 repaint();
             }
