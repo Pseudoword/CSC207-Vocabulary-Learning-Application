@@ -1,4 +1,6 @@
 package use_case.create_deck;
 
-public class CreateDeckOutputBoundary {
+public interface CreateDeckOutputBoundary {
+    void prepareSuccessView(CreateDeckOutputData outputData);
+    void prepareFailView(String error);
 }
