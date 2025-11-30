@@ -21,7 +21,7 @@ public class MultipleChoiceQuizView extends JPanel {
     private JButton[] choiceButtons;
     private JButton nextButton;
     private JButton retakeButton;
-    private JButton mainMenuButton;
+    private JButton decksButton;
     private boolean answerSelected = false;
 
     public MultipleChoiceQuizView(MultipleChoiceQuizController multipleChoiceQuizController,
@@ -136,18 +136,18 @@ public class MultipleChoiceQuizView extends JPanel {
 
         addButtonHoverEffect(retakeButton, new Color(255, 165, 0));
 
-        mainMenuButton = new JButton("Main Menu");
-        mainMenuButton.setFont(new Font("Arial", Font.BOLD, 18));
-        mainMenuButton.setPreferredSize(new Dimension(150, 50));
-        mainMenuButton.setBackground(new Color(255, 105, 180));
-        mainMenuButton.setForeground(Color.WHITE);
-        mainMenuButton.setFocusPainted(false);
-        mainMenuButton.setBorderPainted(false);
-        mainMenuButton.setVisible(false);
+        decksButton = new JButton("Decks");
+        decksButton.setFont(new Font("Arial", Font.BOLD, 18));
+        decksButton.setPreferredSize(new Dimension(150, 50));
+        decksButton.setBackground(new Color(255, 105, 180));
+        decksButton.setForeground(Color.WHITE);
+        decksButton.setFocusPainted(false);
+        decksButton.setBorderPainted(false);
+        decksButton.setVisible(false);
 
-        addButtonHoverEffect(mainMenuButton, new Color(255, 105, 180));
+        addButtonHoverEffect(decksButton, new Color(255, 105, 180));
 
-        mainMenuButton.addActionListener(e -> {
+        decksButton.addActionListener(e -> {
             if (appBuilder != null) {
                 appBuilder.markCurrentDeckAsTaken();
                 appBuilder.refreshDecksView();
@@ -158,7 +158,7 @@ public class MultipleChoiceQuizView extends JPanel {
 
         bottomPanel.add(nextButton);
         bottomPanel.add(retakeButton);
-        bottomPanel.add(mainMenuButton);
+        bottomPanel.add(decksButton);
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
@@ -268,7 +268,7 @@ public class MultipleChoiceQuizView extends JPanel {
         }
 
         retakeButton.setVisible(true);
-        mainMenuButton.setVisible(true);
+        decksButton.setVisible(true);
     }
 
     public String getViewName() {
