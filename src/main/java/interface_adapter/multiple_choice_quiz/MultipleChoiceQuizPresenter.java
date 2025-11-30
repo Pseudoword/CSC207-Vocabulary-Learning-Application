@@ -1,7 +1,7 @@
 package interface_adapter.multiple_choice_quiz;
 
 import use_case.multiple_choice_quiz.MultipleChoiceQuizOutputBoundary;
-import java.util.List;
+import use_case.multiple_choice_quiz.MultipleChoiceQuizOutputData;
 
 public class MultipleChoiceQuizPresenter implements MultipleChoiceQuizOutputBoundary {
 
@@ -12,19 +12,23 @@ public class MultipleChoiceQuizPresenter implements MultipleChoiceQuizOutputBoun
     }
 
     @Override
-    public void presentQuestion(String word, List<String> choices) {
-        viewModel.setCurrentWord(word);
-        viewModel.setChoices(choices);
-    }
+    public void prepareView(MultipleChoiceQuizOutputData outputData) {
+        switch (outputData.getViewType()) {
+            case QUESTION_VIEW:
+                viewModel.setCurrentWord(outputData.getWord());
+                viewModel.setChoices(outputData.getChoices());
+                viewModel.setCorrectAnswer(outputData.getCorrectAnswer());
+                viewModel.setQuizFinished(false);
+                break;
 
-    @Override
-    public void presentCorrectAnswer(String correctAnswer) {
-        viewModel.setCorrectAnswer(correctAnswer);
-    }
+            case QUIZ_FINISHED_VIEW:
+                viewModel.setQuizFinished(true);
+                viewModel.setHasMistakes(outputData.hasMistakes());
+                break;
 
-    @Override
-    public void presentQuizFinished(boolean hasMistakes) {
-        viewModel.setQuizFinished(true);
-        viewModel.setHasMistakes(hasMistakes);
+            case ERROR_VIEW:
+                System.err.println("Quiz error: " + outputData.getErrorMessage());
+                break;
+        }
     }
 }
