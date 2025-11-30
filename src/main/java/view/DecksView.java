@@ -1,95 +1,96 @@
 package view;
 
+import app.AppBuilder;
+import entity.Deck;
+import entity.Vocabulary;
+import interface_adapter.ViewManagerModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * The View for displaying all decks.
- * Matches the provided sketch: list of decks + Study All / Review / Edit buttons.
- */
 public class DecksView extends JPanel implements ActionListener {
 
     private final String viewName = "decks";
-
-    private final JList<String> deckList;
+    private final JList<Deck> deckList;
     private final JButton studyAllButton;
     private final JButton reviewButton;
     private final JButton editButton;
+    private final JButton takeQuizButton;
     private final JButton backButton;
+    private final ViewManagerModel viewManagerModel;
+    private final AppBuilder appBuilder;
 
-    public DecksView() {
+    public DecksView(ViewManagerModel viewManagerModel, AppBuilder appBuilder) {
+        this.viewManagerModel = viewManagerModel;
+        this.appBuilder = appBuilder;
+
         this.setPreferredSize(new Dimension(900, 700));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setBackground(new Color(255, 240, 245));
 
-        // Title
         JLabel title = new JLabel("Decks");
         title.setFont(new Font("Arial", Font.BOLD, 28));
+        title.setForeground(new Color(199, 21, 133));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Deck list (mock data for now)
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        listModel.addElement("Deck 1");
-        listModel.addElement("Deck 2");
-        listModel.addElement("Deck 3");
+        DefaultListModel<Deck> listModel = new DefaultListModel<>();
+
+        Deck deck1 = new Deck("Deck 1", "Sample deck 1");
+        Vocabulary apple = new Vocabulary("apple", "A fruit that is typically red or green", false);
+        deck1.addWord(apple);
+        deck1.addWord(new Vocabulary("dog", "A common domesticated animal", false));
+
+        Deck deck2 = new Deck("Deck 2", "Sample deck 2");
+        deck2.addWord(new Vocabulary("red", "The color of fire and blood", false));
+        deck2.addWord(new Vocabulary("cat", "A small domesticated feline", false));
+
+        Deck deck3 = new Deck("Deck 3", "Sample deck 3");
+        deck3.addWord(new Vocabulary("house", "A building for human habitation", false));
+
+        listModel.addElement(deck1);
+        listModel.addElement(deck2);
+        listModel.addElement(deck3);
 
         deckList = new JList<>(listModel);
-        deckList.setFont(new Font("Arial", Font.PLAIN, 16));
+        deckList.setCellRenderer(new DeckListCellRenderer());
         deckList.setFixedCellHeight(30);
         deckList.setVisibleRowCount(5);
+        deckList.setSelectionBackground(new Color(255, 240, 245));
+        deckList.setSelectionForeground(new Color(255, 105, 180));
         JScrollPane scrollPane = new JScrollPane(deckList);
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
         scrollPane.setPreferredSize(new Dimension(300, 150));
 
-        // Buttons
         Dimension buttonSize = new Dimension(150, 40);
         Font buttonFont = new Font("Arial", Font.PLAIN, 16);
 
-        studyAllButton = new JButton("Study All");
-        studyAllButton.setPreferredSize(buttonSize);
-        studyAllButton.setMaximumSize(buttonSize);
-        studyAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        studyAllButton.setFont(buttonFont);
+        studyAllButton = createPinkButton("Study All", buttonSize, buttonFont);
+        reviewButton = createPinkButton("Review", buttonSize, buttonFont);
+        takeQuizButton = createPinkButton("Take Quiz", buttonSize, buttonFont);
+        editButton = createPinkButton("Edit", buttonSize, buttonFont);
+        backButton = createPinkButton("Back", buttonSize, buttonFont);
 
-        reviewButton = new JButton("Review");
-        reviewButton.setPreferredSize(buttonSize);
-        reviewButton.setMaximumSize(buttonSize);
-        reviewButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        reviewButton.setFont(buttonFont);
+        JButton[] buttons = {studyAllButton, reviewButton, takeQuizButton, editButton, backButton};
+        for (JButton b : buttons) {
+            b.setPreferredSize(buttonSize);
+            b.setMaximumSize(buttonSize);
+            b.setAlignmentX(Component.CENTER_ALIGNMENT);
+            b.setFont(buttonFont);
+            b.addActionListener(this);
+        }
 
-        editButton = new JButton("Edit");
-        editButton.setPreferredSize(buttonSize);
-        editButton.setMaximumSize(buttonSize);
-        editButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        editButton.setFont(buttonFont);
-
-        // Back to Main Menu button
-        backButton = new JButton("Back to Main Menu");
-        backButton.setPreferredSize(buttonSize);
-        backButton.setMaximumSize(buttonSize);
-        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        backButton.setFont(buttonFont);
-
-        // Add listeners
-        studyAllButton.addActionListener(this);
-        reviewButton.addActionListener(this);
-        editButton.addActionListener(this);
-        backButton.addActionListener(this);
-
-        // Layout structure
         this.add(Box.createVerticalStrut(60));
         this.add(title);
         this.add(Box.createVerticalStrut(40));
         this.add(scrollPane);
         this.add(Box.createVerticalStrut(40));
 
-        // Button row for Study All and Review
         JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 10));
-        buttonRow.setOpaque(false);
+        buttonRow.setBackground(new Color(255, 240, 245));
         buttonRow.add(studyAllButton);
         buttonRow.add(reviewButton);
-
+        buttonRow.add(takeQuizButton);
         this.add(buttonRow);
         this.add(Box.createVerticalStrut(20));
         this.add(editButton);
@@ -98,31 +99,61 @@ public class DecksView extends JPanel implements ActionListener {
         this.add(Box.createVerticalGlue());
     }
 
+    private JButton createPinkButton(String text, Dimension size, Font font) {
+        JButton button = new JButton(text);
+        button.setPreferredSize(size);
+        button.setMaximumSize(size);
+        button.setFont(font);
+        button.setBackground(new Color(255, 105, 180));
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setOpaque(true);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(199, 21, 133), 1),
+                BorderFactory.createEmptyBorder(8, 15, 8, 15)
+        ));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(219, 112, 147));
+                button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(255, 105, 180));
+                button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        });
+
+        return button;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
         if (src == studyAllButton) {
-            JOptionPane.showMessageDialog(this,
-                    "Use Case 5 not implemented yet",
-                    "Information",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Use Case 5 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == reviewButton) {
-            JOptionPane.showMessageDialog(this,
-                    "Use Case 6 not implemented yet",
-                    "Information",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Use Case 6 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
+        } else if (src == takeQuizButton) {
+            Deck selectedDeck = deckList.getSelectedValue();
+            if (selectedDeck == null) {
+                JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
+            } else {
+                // Start quiz for the selected deck
+                appBuilder.startQuizForDeck(selectedDeck);
+            }
         } else if (src == editButton) {
-            JOptionPane.showMessageDialog(this,
-                    "Use Case 4 not implemented yet",
-                    "Information",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Use Case 4 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == backButton) {
-
-            JOptionPane.showMessageDialog(this,
-                    "Returning to Main Menu",
-                    "Back",
-                    JOptionPane.INFORMATION_MESSAGE);
-
+            viewManagerModel.setState("logged in");
+            viewManagerModel.firePropertyChange();
         }
     }
 

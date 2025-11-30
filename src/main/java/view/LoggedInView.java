@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -13,19 +14,21 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class LoggedInView extends JPanel implements ActionListener, PropertyChangeListener {
+
     private final String viewName = "logged in";
     private final LoggedInViewModel loggedInViewModel;
+    private final ViewManagerModel viewManagerModel;
     private ChangePasswordController changePasswordController = null;
     private LogoutController logoutController = null;
     private final JLabel username;
     private final JButton decksButton;
     private final JButton newDeckButton;
-    private final JButton takeQuizButton;
     private final JButton changePasswordButton;
     private final JButton logoutButton;
 
-    public LoggedInView(LoggedInViewModel loggedInViewModel) {
+    public LoggedInView(LoggedInViewModel loggedInViewModel, ViewManagerModel viewManagerModel) {
         this.loggedInViewModel = loggedInViewModel;
+        this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel.addPropertyChangeListener(this);
 
         this.setLayout(new BorderLayout());
@@ -60,9 +63,8 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
 
         decksButton = createPinkButton("Decks", buttonSize, buttonFont);
         newDeckButton = createPinkButton("New Deck", buttonSize, buttonFont);
-        takeQuizButton = createPinkButton("Take Quiz", buttonSize, buttonFont);
 
-        JButton[] mainButtons = {decksButton, newDeckButton, takeQuizButton};
+        JButton[] mainButtons = {decksButton, newDeckButton};
         for (JButton b : mainButtons) {
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
             b.addActionListener(this);
@@ -73,8 +75,6 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
         centerPanel.add(Box.createVerticalStrut(25));
         centerPanel.add(newDeckButton);
         centerPanel.add(Box.createVerticalStrut(25));
-        centerPanel.add(takeQuizButton);
-        centerPanel.add(Box.createVerticalGlue());
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBackground(new Color(255, 240, 245));
@@ -123,7 +123,6 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
                 button.setBackground(new Color(219, 112, 147));
                 button.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(255, 105, 180));
                 button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -137,18 +136,10 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     public void actionPerformed(ActionEvent evt) {
         Object source = evt.getSource();
         if (source == decksButton) {
-            try {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                frame.setContentPane(new DecksView());
-                frame.revalidate();
-                frame.repaint();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error loading decks view: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            viewManagerModel.setState("decks");
+            viewManagerModel.firePropertyChange();
         } else if (source == newDeckButton) {
             JOptionPane.showMessageDialog(this, "Use case 3 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
-        } else if (source == takeQuizButton) {
-            JOptionPane.showMessageDialog(this, "Use case 7 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (source == changePasswordButton) {
             showChangePasswordDialog();
         } else if (source == logoutButton) {
@@ -213,16 +204,11 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
                 return;
             }
             LoggedInState currentState = loggedInViewModel.getState();
-            changePasswordController.execute(
-                    currentState.getUsername(),
-                    newPassword
-            );
+            changePasswordController.execute(currentState.getUsername(), newPassword);
             passwordDialog.dispose();
         });
 
-        cancelButton.addActionListener(e -> {
-            passwordDialog.dispose();
-        });
+        cancelButton.addActionListener(e -> passwordDialog.dispose());
 
         buttonPanel.add(confirmButton);
         buttonPanel.add(cancelButton);

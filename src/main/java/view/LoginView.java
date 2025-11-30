@@ -102,24 +102,22 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
         logIn = createPinkButton("log in");
         buttonPanel.add(logIn);
 
-        cancel = createPinkButton("Back to Last Page"); // 修改按钮文本为完整显示
+        cancel = createPinkButton("Back to Last Page");
         buttonPanel.add(cancel);
 
         this.add(buttonPanel, BorderLayout.SOUTH);
 
-        logIn.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        if (evt.getSource().equals(logIn)) {
-                            final LoginState currentState = loginViewModel.getState();
-                            loginController.execute(
-                                    currentState.getUsername(),
-                                    currentState.getPassword()
-                            );
-                        }
-                    }
+        logIn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                if (evt.getSource().equals(logIn)) {
+                    final LoginState currentState = loginViewModel.getState();
+                    loginController.execute(
+                            currentState.getUsername(),
+                            currentState.getPassword()
+                    );
                 }
-        );
+            }
+        });
 
         cancel.addActionListener(this);
 
@@ -131,19 +129,13 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
             }
 
             @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
         });
 
         passwordInputField.getDocument().addDocumentListener(new DocumentListener() {
@@ -154,26 +146,20 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
             }
 
             @Override
-            public void insertUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void removeUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
 
             @Override
-            public void changedUpdate(DocumentEvent e) {
-                documentListenerHelper();
-            }
+            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
         });
     }
 
     private JButton createPinkButton(String text) {
         JButton button = new JButton(text);
         if (text.equals("Back to Last Page")) {
-            button.setPreferredSize(new Dimension(180, 35)); // 进一步增加宽度到180
+            button.setPreferredSize(new Dimension(180, 35));
         } else {
             button.setPreferredSize(new Dimension(120, 35));
         }
@@ -193,7 +179,6 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
                 button.setBackground(new Color(219, 112, 147));
                 button.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(255, 105, 180));
                 button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -205,18 +190,21 @@ public class LoginView extends JPanel implements ActionListener, PropertyChangeL
 
     public void actionPerformed(ActionEvent evt) {
         if (evt.getSource().equals(cancel)) {
-            JOptionPane.showMessageDialog(this,
-                    "Returning to Last Page",
-                    "Back to Last Page",
-                    JOptionPane.INFORMATION_MESSAGE);
-
+            switchToSignupView();
             usernameInputField.setText("");
             passwordInputField.setText("");
-
             final LoginState currentState = loginViewModel.getState();
             currentState.setUsername("");
             currentState.setPassword("");
             loginViewModel.setState(currentState);
+        }
+    }
+
+    public void switchToSignupView() {
+        Container parent = this.getParent();
+        if (parent.getLayout() instanceof CardLayout) {
+            CardLayout layout = (CardLayout) parent.getLayout();
+            layout.show(parent, "sign up");
         }
     }
 

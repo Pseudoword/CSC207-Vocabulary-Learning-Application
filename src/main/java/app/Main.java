@@ -6,14 +6,16 @@ public class Main {
     public static void main(String[] args) {
         AppBuilder appBuilder = new AppBuilder();
         JFrame application = appBuilder
-                .addLoginView()
                 .addSignupView()
+                .addLoginView()
                 .addLoggedInView()
+                .addDecksView()
                 .addSignupUseCase()
                 .addLoginUseCase()
                 .addChangePasswordUseCase()
                 .addLogoutUseCase()
                 .addAddFlashcardToDeckView()
+                .addMultipleChoiceQuizUseCase()
                 .addAddFlashcardToDeckUseCase()
                 .build();
 

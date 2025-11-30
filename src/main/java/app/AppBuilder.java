@@ -1,7 +1,12 @@
 package app;
 
+import java.util.Collections;
+import java.util.Random;
 import data_access.FileUserDataAccessObject;
+import entity.Deck;
+import entity.MultipleChoiceQuestion;
 import entity.UserFactory;
+import entity.Vocabulary;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
@@ -11,6 +16,9 @@ import interface_adapter.login.LoginPresenter;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.logout.LogoutController;
 import interface_adapter.logout.LogoutPresenter;
+import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizController;
+import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizPresenter;
+import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -23,25 +31,24 @@ import use_case.login.LoginOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
+import use_case.multiple_choice_quiz.MultipleChoiceQuizInteractor;
+import use_case.multiple_choice_quiz.MultipleChoiceQuizOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
-import view.LoggedInView;
-import view.LoginView;
-import view.SignupView;
+import view.*;
 import data_access.DictionaryAPIDataAccess;
-import interface_adapter.ViewManagerModel;
 import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckController;
 import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckPresenter;
 import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckViewModel;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckInputBoundary;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckInteractor;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckOutputBoundary;
-import view.AddFlashcardToDeckView;
-import view.ViewManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -49,7 +56,7 @@ public class AppBuilder {
 
     private final UserFactory userFactory = new UserFactory();
     private final ViewManagerModel viewManagerModel = new ViewManagerModel();
-    private final ViewManager viewManager = new ViewManager(cardPanel, cardLayout, viewManagerModel);
+
 
     // set which data access implementation to use, can be any
     // of the classes from the data_access package
@@ -58,7 +65,7 @@ public class AppBuilder {
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
 
     // DAO version using a shared external database
-    //private final DictionaryAPIDataAccess dataAccessObject = new DictionaryAPIDataAccess();
+    private final DictionaryAPIDataAccess dataAccessObject = new DictionaryAPIDataAccess();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -66,8 +73,18 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
-    private AddFlashcardToDeckViewModel addFlashcardToDeckView
+    private final AddFlashcardToDeckViewModel addFlashcardToDeckViewModel = new AddFlashcardToDeckViewModel();
     private AddFlashcardToDeckView addFlashcardToDeckView;
+    private MultipleChoiceQuizViewModel multipleChoiceQuizViewModel;
+    private MultipleChoiceQuizController multipleChoiceQuizController;
+    private MultipleChoiceQuizInteractor multipleChoiceQuizInteractor;
+    private ArrayList<MultipleChoiceQuestion> originalQuestions;
+    private MultipleChoiceQuizView multipleChoiceQuizView;
+    private DecksView decksView;
+    private Deck currentDeck;
+
+
+
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
@@ -89,9 +106,129 @@ public class AppBuilder {
 
     public AppBuilder addLoggedInView() {
         loggedInViewModel = new LoggedInViewModel();
-        loggedInView = new LoggedInView(loggedInViewModel);
+        loggedInView = new LoggedInView(loggedInViewModel, viewManagerModel);
         cardPanel.add(loggedInView, loggedInView.getViewName());
         return this;
+    }
+
+    public AppBuilder addDecksView() {
+        decksView = new DecksView(viewManagerModel, this);
+        cardPanel.add(decksView, decksView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addMultipleChoiceQuizUseCaseForDeck(Deck deck) {
+        this.currentDeck = deck;
+
+        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
+
+        ArrayList<MultipleChoiceQuestion> questions = new ArrayList<>();
+        Random random = new Random();
+        for (Vocabulary vocab : deck.getVocabularies()) {
+            // Create choices list with correct answer and dummy wrong answers
+            List<String> choices = new ArrayList<>();
+            choices.add(vocab.getDefinition()); // Correct answer
+            choices.add("Wrong definition 1");
+            choices.add("Wrong definition 2");
+            choices.add("Wrong definition 3");
+
+            // Shuffle the choices
+            Collections.shuffle(choices, random);
+
+            // Find the index of the correct answer after shuffling
+            int correctIndex = choices.indexOf(vocab.getDefinition());
+
+            questions.add(new MultipleChoiceQuestion(vocab, choices, correctIndex));
+        }
+
+        originalQuestions = questions;
+
+        MultipleChoiceQuizOutputBoundary outputBoundary = new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
+        multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(questions, outputBoundary);
+        multipleChoiceQuizController = new MultipleChoiceQuizController(multipleChoiceQuizInteractor, outputBoundary);
+        multipleChoiceQuizView = new MultipleChoiceQuizView(
+                multipleChoiceQuizController,
+                multipleChoiceQuizViewModel,
+                viewManagerModel,
+                this
+        );
+
+        cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
+
+        return this;
+    }
+
+    public AppBuilder addMultipleChoiceQuizUseCase() {
+        // Create a sample deck
+        Deck sampleDeck = new Deck("Sample", "Sample deck");
+        sampleDeck.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
+        sampleDeck.addWord(new Vocabulary("dog", "A common domesticated animal", false));
+        sampleDeck.addWord(new Vocabulary("red", "The color of fire and blood", false));
+
+        return addMultipleChoiceQuizUseCaseForDeck(sampleDeck);
+    }
+
+    // Update createRetakeQuiz to mark deck as taken and handle mastery
+    public void createRetakeQuiz(List<MultipleChoiceQuestion> questions) {
+        // Mark the deck as having been attempted
+        if (currentDeck != null) {
+            currentDeck.markQuizTaken();
+        }
+
+        // Remove old quiz view
+        cardPanel.remove(multipleChoiceQuizView);
+
+        // Reset the view model
+        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
+
+        // Create new presenter
+        MultipleChoiceQuizOutputBoundary outputBoundary =
+                new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
+
+        // Create new interactor with the questions (either incorrect or all)
+        multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(questions, outputBoundary);
+
+        // Create new controller
+        multipleChoiceQuizController =
+                new MultipleChoiceQuizController(multipleChoiceQuizInteractor, outputBoundary);
+
+        // Create new view
+        multipleChoiceQuizView = new MultipleChoiceQuizView(
+                multipleChoiceQuizController,
+                multipleChoiceQuizViewModel,
+                viewManagerModel,
+                this
+        );
+
+        // Add new view to card panel
+        cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
+
+        // Revalidate and repaint the card panel
+        cardPanel.revalidate();
+        cardPanel.repaint();
+
+        // Navigate to the new quiz
+        viewManagerModel.setState("MultipleChoiceQuiz");
+        viewManagerModel.firePropertyChange();
+    }
+
+    // Add method to start quiz from a deck
+    public void startQuizForDeck(Deck deck) {
+        // Remove old quiz if exists
+        if (multipleChoiceQuizView != null) {
+            cardPanel.remove(multipleChoiceQuizView);
+        }
+
+        // Create new quiz for this deck
+        addMultipleChoiceQuizUseCaseForDeck(deck);
+
+        // Navigate to quiz
+        viewManagerModel.setState("MultipleChoiceQuiz");
+        viewManagerModel.firePropertyChange();
+    }
+
+    public List<MultipleChoiceQuestion> getOriginalQuestions() {
+        return new ArrayList<>(originalQuestions);
     }
 
     public AppBuilder addSignupUseCase() {
@@ -141,6 +278,8 @@ public class AppBuilder {
 
         final LogoutController logoutController = new LogoutController(logoutInteractor);
         loggedInView.setLogoutController(logoutController);
+        return this;
+    }
     public AppBuilder addAddFlashcardToDeckView() {
         addFlashcardToDeckView = new AddFlashcardToDeckView(addFlashcardToDeckViewModel);
         cardPanel.add(addFlashcardToDeckView, addFlashcardToDeckView.getViewName());
@@ -163,11 +302,19 @@ public class AppBuilder {
         return this;
     }
 
+    public void markCurrentDeckAsTaken() {
+        if (currentDeck != null) {
+            currentDeck.markQuizTaken();
+        }
+    }
+
     public JFrame build() {
         final JFrame application = new JFrame("Vocabulary Learning Application");
         application.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         application.add(cardPanel);
+
+        new ViewManager(cardPanel, cardLayout, viewManagerModel);
 
         viewManagerModel.setState(signupView.getViewName());
         viewManagerModel.firePropertyChange();

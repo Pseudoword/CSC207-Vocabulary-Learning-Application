@@ -3,9 +3,9 @@ package entity;
 import java.util.List;
 
 public class MultipleChoiceQuestion {
-    private Vocabulary word;
-    private List<String> choices;
-    private int answerIndex;
+    private final Vocabulary word;
+    private final List<String> choices;
+    private final int answerIndex;
 
     public MultipleChoiceQuestion(Vocabulary word, List<String> choices, int answerIndex){
         this.word = word;
@@ -13,8 +13,8 @@ public class MultipleChoiceQuestion {
         this.answerIndex = answerIndex;
     }
 
-    public Vocabulary getWord() {
-        return word;
+    public String getWord() {
+        return word.getWord();
     }
 
     public List<String> getChoices() {
@@ -29,14 +29,7 @@ public class MultipleChoiceQuestion {
         return userChoiceIndex == answerIndex;
     }
 
-    public void displayQuestion() {
-        System.out.println("What is the definition of: " + word.getWord() + "?");
-        for (int i = 0; i < choices.size(); i++) {
-            System.out.println((i + 1) + ". " + choices.get(i)); //prints options as "1. choice" "2. choice" etc.
-        }
-    }
-
-    public int getChoiceIndex(String userChoice) {
-        return choices.indexOf(userChoice);
+    public Vocabulary getVocabularyObject() {
+        return word;
     }
 }

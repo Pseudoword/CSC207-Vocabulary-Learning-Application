@@ -128,7 +128,11 @@ public class SignupView extends JPanel implements ActionListener, PropertyChange
         toLogin.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
-                        signupController.switchToLoginView();
+                        Container parent = SignupView.this.getParent();
+                        if (parent.getLayout() instanceof CardLayout) {
+                            CardLayout layout = (CardLayout) parent.getLayout();
+                            layout.show(parent, "log in"); // making sure it's the same as LoginView.getViewName()
+                        }
                     }
                 }
         );
