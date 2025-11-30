@@ -1,8 +1,5 @@
 package interface_adapter.create_deck;
 
-/**
- * The State information representing the create deck view.
- */
 public class CreateDeckState {
     private String deckTitle = "";
     private String description = "";
