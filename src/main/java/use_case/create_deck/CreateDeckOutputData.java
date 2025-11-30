@@ -1,19 +1,19 @@
 package use_case.create_deck;
 
 public class CreateDeckOutputData {
-    private final String deckName;
-    private final boolean success;
+    private final String deckTitle;
+    private final String description;
 
-    public CreateDeckOutputData(String deckName, boolean success) {
-        this.deckName = deckName;
-        this.success = success;
+    public CreateDeckOutputData(String deckTitle, String description) {
+        this.deckTitle = deckTitle;
+        this.description = description;
     }
 
-    public String getDeckName() {
-        return deckName;
+    public String getDeckTitle() {
+        return deckTitle;
     }
 
-    public boolean isSuccess() {
-        return success;
+    public String getDescription() {
+        return description;
     }
 }

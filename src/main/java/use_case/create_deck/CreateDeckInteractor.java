@@ -14,25 +14,25 @@ public class CreateDeckInteractor implements CreateDeckInputBoundary {
 
     @Override
     public void execute(CreateDeckInputData inputData) {
-        final String deckTitle = inputData.getDeckName();
+        final String deckTitle = inputData.getDeckTitle();
+        final String description = inputData.getDescription();
 
-        // Validation
         if (deckTitle == null || deckTitle.trim().isEmpty()) {
             outputBoundary.prepareFailView("Deck title cannot be empty.");
             return;
         }
 
-        // Check if deck already exists
         if (dataAccessObject.existsByTitle(deckTitle)) {
             outputBoundary.prepareFailView("Deck '" + deckTitle + "' already exists.");
             return;
         }
 
         // Create and save the new deck
-        final Deck newDeck = new Deck(deckTitle);
+        final String finalDescription = (description == null) ? " " : description;
+        final Deck newDeck = new Deck(deckTitle, finalDescription);
         dataAccessObject.save(newDeck);
 
-        final CreateDeckOutputData outputData = new CreateDeckOutputData(deckTitle);
+        final CreateDeckOutputData outputData = new CreateDeckOutputData(deckTitle, finalDescription);
         outputBoundary.prepareSuccessView(outputData);
     }
 }

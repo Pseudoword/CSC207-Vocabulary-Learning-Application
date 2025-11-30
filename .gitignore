@@ -16,3 +16,6 @@ users.csv
 # OS junk files
 .DS_Store
 Thumbs.db
+
+*.jar
+lib/*.jar
