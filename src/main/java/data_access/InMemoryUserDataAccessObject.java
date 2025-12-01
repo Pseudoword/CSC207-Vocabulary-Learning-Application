@@ -27,7 +27,11 @@ public class InMemoryUserDataAccessObject implements UpdateDeckDetailsDataAccess
 
     @Override
     public void updateDeckDetails(String oldTitle, Deck deck) {
-        // Replace the old entry with the new deck details
-        decks.put(deck.getTitle(), decks.remove(oldTitle));
+        // Remove the old entry and add the new deck under its new title
+        if (decks.containsKey(oldTitle)) {
+            decks.remove(oldTitle);
+            decks.put(deck.getTitle(), deck);
+        }
+        // If oldTitle does not exist, do nothing (no-op)
     }
 }
