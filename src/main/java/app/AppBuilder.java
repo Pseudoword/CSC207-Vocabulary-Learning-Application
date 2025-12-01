@@ -112,10 +112,8 @@ public class AppBuilder {
     private StudyFlashCardsController studyFlashCardsController;
     private Deck currentDeck;
     private List<Deck> allDecks;
-    private UpdateDeckDetailsViewModel updateDeckDetailsViewModel;
+    private UpdateDeckDetailsViewModel updateDeckDetailsViewModel = new UpdateDeckDetailsViewModel();
     private UpdateDeckDetailsView updateDeckDetailsView;
-
-
 
 
     public AppBuilder() {
@@ -148,7 +146,6 @@ public class AppBuilder {
     }
 
     public AppBuilder addDecksView() {
-        updateDeckDetailsViewModel = new UpdateDeckDetailsViewModel();
         decksView = new DecksView(viewManagerModel, this, updateDeckDetailsViewModel);
         cardPanel.add(decksView, decksView.getViewName());
         return this;

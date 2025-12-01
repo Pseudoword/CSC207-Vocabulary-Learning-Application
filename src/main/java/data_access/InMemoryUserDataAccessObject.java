@@ -35,4 +35,9 @@ public class InMemoryUserDataAccessObject implements UpdateDeckDetailsDataAccess
         }
         // If oldTitle does not exist, do nothing (no-op)
     }
+
+    @Override
+    public Deck getDeck(String title) {
+        return decks.get(title);
+    }
 }

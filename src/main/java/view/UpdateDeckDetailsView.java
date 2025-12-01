@@ -59,6 +59,7 @@ public class UpdateDeckDetailsView extends JPanel implements ActionListener, Pro
                     deckTitleField.getText().trim(),
                     deckDescriptionArea.getText().trim()
             );
+            switchToDecksView();
         });
 
         cancelButton.addActionListener(evt -> switchToDecksView());
@@ -69,9 +70,21 @@ public class UpdateDeckDetailsView extends JPanel implements ActionListener, Pro
                 state.setDeckTitle(deckTitleField.getText());
                 viewModel.setState(state);
             }
-            @Override public void insertUpdate(DocumentEvent e) { syncState(); }
-            @Override public void removeUpdate(DocumentEvent e) { syncState(); }
-            @Override public void changedUpdate(DocumentEvent e) { syncState(); }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                syncState();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                syncState();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                syncState();
+            }
         });
 
         deckDescriptionArea.getDocument().addDocumentListener(new DocumentListener() {
@@ -80,9 +93,21 @@ public class UpdateDeckDetailsView extends JPanel implements ActionListener, Pro
                 state.setDeckDescription(deckDescriptionArea.getText());
                 viewModel.setState(state);
             }
-            @Override public void insertUpdate(DocumentEvent e) { syncState(); }
-            @Override public void removeUpdate(DocumentEvent e) { syncState(); }
-            @Override public void changedUpdate(DocumentEvent e) { syncState(); }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                syncState();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                syncState();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                syncState();
+            }
         });
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -126,8 +151,12 @@ public class UpdateDeckDetailsView extends JPanel implements ActionListener, Pro
 
         if (state.getError() != null) {
             JOptionPane.showMessageDialog(this, state.getError());
+            state.setError(null);
+            viewModel.setState(state);
         } else if (state.getSuccessMessage() != null) {
             JOptionPane.showMessageDialog(this, state.getSuccessMessage());
+            state.setSuccessMessage(null);
+            viewModel.setState(state);
         }
     }
 }
