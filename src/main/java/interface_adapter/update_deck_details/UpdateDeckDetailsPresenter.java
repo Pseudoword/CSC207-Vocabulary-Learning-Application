@@ -24,7 +24,6 @@ public class UpdateDeckDetailsPresenter implements UpdateDeckDetailsOutputBounda
         state.setSuccessMessage("Successfully changed deck title to " + response.getTitle() +
                 ". Successfully changed deck description to " + response.getDescription());
         state.setError(null);
-        // 将最新数据写回，以便视图刷新
         state.setDeckDescription(response.getDescription());
 
         this.updateDeckDetailsViewModel.setState(state);

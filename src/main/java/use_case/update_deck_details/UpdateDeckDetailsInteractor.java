@@ -27,7 +27,7 @@ public class UpdateDeckDetailsInteractor implements UpdateDeckDetailsInputBounda
         final Deck deck = userDataAccessObject.getDeck(oldTitle);
 
         if (deck == null) {
-            userPresenter.prepareFailView("Target deck" + oldTitle + "' does not exist.");
+            userPresenter.prepareFailView("Target deck '" + oldTitle + "' does not exist.");
             return;
         }
 
