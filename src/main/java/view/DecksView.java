@@ -132,6 +132,11 @@ public class DecksView extends JPanel implements ActionListener {
             Deck selectedDeck = deckList.getSelectedValue();
             if (selectedDeck == null) {
                 JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
+            } else if (selectedDeck.getVocabularies().size() < 4) {
+                JOptionPane.showMessageDialog(this,
+                        "Not enough vocabulary for quiz",
+                        "Quiz Unavailable",
+                        JOptionPane.WARNING_MESSAGE);
             } else {
                 // Start quiz for the selected deck
                 appBuilder.startQuizForDeck(selectedDeck);

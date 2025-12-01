@@ -49,6 +49,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -98,6 +99,9 @@ public class AppBuilder {
         Deck deck1 = new Deck("Deck 1", "Sample deck 1");
         deck1.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
         deck1.addWord(new Vocabulary("dog", "A common domesticated animal", false));
+        deck1.addWord(new Vocabulary("red", "The color of fire and blood", false));
+        deck1.addWord(new Vocabulary("cat", "A small domesticated feline", false));
+        deck1.addWord(new Vocabulary("house", "A building for human habitation", false));
 
         Deck deck2 = new Deck("Deck 2", "Sample deck 2");
         deck2.addWord(new Vocabulary("red", "The color of fire and blood", false));
@@ -158,26 +162,39 @@ public class AppBuilder {
     public AppBuilder addMultipleChoiceQuizUseCaseForDeck(Deck deck) {
         this.currentDeck = deck;
 
-        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
-
         ArrayList<MultipleChoiceQuestion> questions = new ArrayList<>();
         Random random = new Random();
-        for (Vocabulary vocab : deck.getVocabularies()) {
-            // Create choices list with correct answer and dummy wrong answers
-            List<String> choices = new ArrayList<>();
-            choices.add(vocab.getDefinition()); // Correct answer
-            choices.add("Wrong definition 1");
-            choices.add("Wrong definition 2");
-            choices.add("Wrong definition 3");
 
-            // Shuffle the choices
+        // Collect all definitions first
+        List<String> allDefinitions = deck.getVocabularies()
+                .stream()
+                .map(Vocabulary::getDefinition) // make a list of Strings
+                .collect(Collectors.toList()); // use Collectors.toList()
+
+        for (Vocabulary vocab : deck.getVocabularies()) {
+
+            // Filter out the correct definition
+            List<String> wrongDefinitions = allDefinitions.stream()
+                    .filter(def -> !def.equals(vocab.getDefinition())) // compare Strings
+                    .collect(Collectors.toList());
+
+            // Shuffle and pick 3 wrong definitions
+            Collections.shuffle(wrongDefinitions, random);
+            int numWrong = Math.min(3, wrongDefinitions.size());
+            List<String> choices = new ArrayList<>();
+
+            choices.add(vocab.getDefinition()); // correct answer
+            choices.addAll(wrongDefinitions.subList(0, numWrong));
+
+            // Shuffle all choices
             Collections.shuffle(choices, random);
 
-            // Find the index of the correct answer after shuffling
             int correctIndex = choices.indexOf(vocab.getDefinition());
 
             questions.add(new MultipleChoiceQuestion(vocab, choices, correctIndex));
         }
+
+        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
 
         originalQuestions = questions;
 
