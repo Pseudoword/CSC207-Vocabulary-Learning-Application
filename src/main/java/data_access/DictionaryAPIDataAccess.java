@@ -8,7 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckDataAccessInterface;
-import use_case.create_deck.CreateDeckDataAccessInterface;
+import use_case.update_deck_details.UpdateDeckDetailsDataAccessInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Data Access Object that interacts with the Merriam-Webster Dictionary API.
  */
-public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInterface, CreateDeckDataAccessInterface {
+public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInterface, UpdateDeckDetailsDataAccessInterface {
 
     private static final String API_URL = "https://www.dictionaryapi.com/api/v3/references/learners/json";
     private static final String API_KEY = "b39169cd-e329-4bb0-9b46-31325235f40e";
@@ -90,5 +90,16 @@ public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInte
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public boolean existsByTitle(String title) {
+        return false;
+    }
+
+    @Override
+    public void updateDeckDetails(String oldTitle, Deck deck) {
+        // Replace the old entry with the new deck details
+        savedDecks.put(deck.getTitle(), savedDecks.remove(oldTitle));
     }
 }
