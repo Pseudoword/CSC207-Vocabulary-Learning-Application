@@ -32,7 +32,7 @@ class DeleteFlashcardFromDeckInteractorTest {
             }
 
             @Override
-            public void prepareFailView(String error) { fail("Use case failure is unexpected: " + error);}
+            public void prepareFailView(String error) { fail("Use case failure is unexpected: " + error); }
 
         };
 
