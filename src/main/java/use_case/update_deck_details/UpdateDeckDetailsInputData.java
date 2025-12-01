@@ -1,6 +1,5 @@
 package use_case.update_deck_details;
 
-import entity.Deck;
 
 /**
  * The input data for the Update Deck Details Use Case.
