@@ -44,6 +44,12 @@ import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckViewModel;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckInputBoundary;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckInteractor;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckOutputBoundary;
+import interface_adapter.create_deck.CreateDeckController;
+import interface_adapter.create_deck.CreateDeckPresenter;
+import interface_adapter.create_deck.CreateDeckViewModel;
+import use_case.create_deck.CreateDeckInputBoundary;
+import use_case.create_deck.CreateDeckInteractor;
+import use_case.create_deck.CreateDeckOutputBoundary;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,6 +81,8 @@ public class AppBuilder {
     private LoginView loginView;
     private final AddFlashcardToDeckViewModel addFlashcardToDeckViewModel = new AddFlashcardToDeckViewModel();
     private AddFlashcardToDeckView addFlashcardToDeckView;
+    private final CreateDeckViewModel createDeckViewModel = new CreateDeckViewModel();
+    private CreateDeckView createDeckView;
     private MultipleChoiceQuizViewModel multipleChoiceQuizViewModel;
     private MultipleChoiceQuizController multipleChoiceQuizController;
     private MultipleChoiceQuizInteractor multipleChoiceQuizInteractor;
@@ -299,6 +307,28 @@ public class AppBuilder {
 
         final AddFlashcardToDeckController controller = new AddFlashcardToDeckController(interactor);
         addFlashcardToDeckView.setController(controller);
+        return this;
+    }
+
+    public AppBuilder addCreateDeckView() {
+        createDeckView = new CreateDeckView(createDeckViewModel);
+        cardPanel.add(createDeckView, createDeckView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addCreateDeckUseCase() {
+        final CreateDeckOutputBoundary outputBoundary = new CreateDeckPresenter(
+                viewManagerModel,
+                createDeckViewModel
+        );
+
+        final CreateDeckInputBoundary interactor = new CreateDeckInteractor(
+                dataAccessObject,
+                outputBoundary
+        );
+
+        final CreateDeckController controller = new CreateDeckController(interactor);
+        createDeckView.setController(controller);
         return this;
     }
 
