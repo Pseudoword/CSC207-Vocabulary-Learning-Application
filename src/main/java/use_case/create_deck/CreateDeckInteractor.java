@@ -27,8 +27,7 @@ public class CreateDeckInteractor implements CreateDeckInputBoundary {
             return;
         }
 
-        // Create and save the new deck
-        final String finalDescription = (description == null) ? " " : description;
+        final String finalDescription = (description == null) ? "" : description;
         final Deck newDeck = new Deck(deckTitle, finalDescription);
         dataAccessObject.save(newDeck);
 
