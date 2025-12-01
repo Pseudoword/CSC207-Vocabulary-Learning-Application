@@ -1,6 +1,5 @@
 package view;
 
-import interface_adapter.ViewManagerModel;
 import interface_adapter.update_deck_details.UpdateDeckDetailsController;
 import interface_adapter.update_deck_details.UpdateDeckDetailsState;
 import interface_adapter.update_deck_details.UpdateDeckDetailsViewModel;
