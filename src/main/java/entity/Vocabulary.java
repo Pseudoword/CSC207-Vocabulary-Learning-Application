@@ -7,7 +7,7 @@ public class Vocabulary {
     private boolean flagged;
 
 
-    public Vocabulary(String word, String definition, Boolean flagged) {
+    public Vocabulary(String word, String definition, boolean flagged) {
         this.word = word;
         this.definition = definition;
         this.flagged = flagged;
