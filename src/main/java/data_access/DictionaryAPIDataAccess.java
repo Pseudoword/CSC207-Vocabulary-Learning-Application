@@ -99,7 +99,8 @@ public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInte
 
     @Override
     public void updateDeckDetails(String oldTitle, Deck deck) {
-        // Replace the old entry with the new deck details
-        savedDecks.put(deck.getTitle(), savedDecks.remove(oldTitle));
+        // Remove the old entry and put the new deck under its new title
+        savedDecks.remove(oldTitle);
+        savedDecks.put(deck.getTitle(), deck);
     }
 }
