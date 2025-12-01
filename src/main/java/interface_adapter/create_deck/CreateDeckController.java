@@ -10,13 +10,8 @@ public class CreateDeckController {
         this.createDeckInteractor = createDeckInteractor;
     }
 
-    /**
-     * Executes the Create Deck Use Case.
-     * @param deckTitle the title of the deck to create
-     * @param description the description of the deck (can be empty)
-     */
     public void execute(String deckTitle, String description) {
-        final CreateDeckInputData inputData = new CreateDeckInputData(deckTitle);
+        final CreateDeckInputData inputData = new CreateDeckInputData(deckTitle, description);
         createDeckInteractor.execute(inputData);
     }
 }
