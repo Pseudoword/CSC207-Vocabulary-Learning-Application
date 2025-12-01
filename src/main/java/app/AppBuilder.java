@@ -97,26 +97,7 @@ public class AppBuilder {
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
-        // initializeDecks();
     }
-
-/*    private void initializeDecks() {
-
-        Deck deck1 = new Deck("Deck 1", "Sample deck 1");
-        deck1.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
-        deck1.addWord(new Vocabulary("dog", "A common domesticated animal", false));
-
-        Deck deck2 = new Deck("Deck 2", "Sample deck 2");
-        deck2.addWord(new Vocabulary("red", "The color of fire and blood", false));
-        deck2.addWord(new Vocabulary("cat", "A small domesticated feline", false));
-
-        Deck deck3 = new Deck("Deck 3", "Sample deck 3");
-        deck3.addWord(new Vocabulary("house", "A building for human habitation", false));
-
-        dataAccessObject.save(deck1);
-        dataAccessObject.save(deck2);
-        dataAccessObject.save(deck3);
-    }*/
 
     public List<Deck> getAllDecks() {
         return dataAccessObject.getAllDecks();
@@ -353,7 +334,7 @@ public class AppBuilder {
     }
 
     public AppBuilder addCreateDeckView() {
-        createDeckView = new CreateDeckView(createDeckViewModel);
+        createDeckView = new CreateDeckView(createDeckViewModel, viewManagerModel);
         cardPanel.add(createDeckView, createDeckView.getViewName());
         return this;
     }
