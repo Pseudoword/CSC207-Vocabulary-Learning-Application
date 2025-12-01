@@ -1,6 +1,9 @@
 package view;
 
 import interface_adapter.StudyFlashCards.StudyFlashCardsController;
+import app.AppBuilder;
+import entity.Deck;
+import entity.Vocabulary;
 import interface_adapter.ViewManagerModel;
 import use_case.StudyFlashCards.StudyFlashCardsInputData;
 
@@ -12,16 +15,18 @@ import java.awt.event.ActionListener;
 public class DecksView extends JPanel implements ActionListener {
 
     private final String viewName = "decks";
-    private final JList<String> deckList;
+    private final JList<Deck> deckList;
     private final JButton studyAllButton;
     private final JButton reviewButton;
     private final JButton editButton;
     private final JButton takeQuizButton;
     private final JButton backButton;
     private final ViewManagerModel viewManagerModel;
+    private final AppBuilder appBuilder;
 
-    public DecksView(ViewManagerModel viewManagerModel) {
+    public DecksView(ViewManagerModel viewManagerModel, AppBuilder appBuilder) {
         this.viewManagerModel = viewManagerModel;
+        this.appBuilder = appBuilder;
 
         this.setPreferredSize(new Dimension(900, 700));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -32,13 +37,13 @@ public class DecksView extends JPanel implements ActionListener {
         title.setForeground(new Color(199, 21, 133));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        listModel.addElement("Deck 1");
-        listModel.addElement("Deck 2");
-        listModel.addElement("Deck 3");
+        DefaultListModel<Deck> listModel = new DefaultListModel<>();
+        for (Deck deck : appBuilder.getAllDecks()) {
+            listModel.addElement(deck);
+        }
 
         deckList = new JList<>(listModel);
-        deckList.setFont(new Font("Arial", Font.PLAIN, 16));
+        deckList.setCellRenderer(new DeckListCellRenderer());
         deckList.setFixedCellHeight(30);
         deckList.setVisibleRowCount(5);
         deckList.setSelectionBackground(new Color(255, 240, 245));
@@ -135,12 +140,12 @@ public class DecksView extends JPanel implements ActionListener {
         } else if (src == reviewButton) {
             JOptionPane.showMessageDialog(this, "Use Case 6 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == takeQuizButton) {
-            String selectedDeck = deckList.getSelectedValue();
+            Deck selectedDeck = deckList.getSelectedValue();
             if (selectedDeck == null) {
                 JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
             } else {
-                viewManagerModel.setState("MultipleChoiceQuiz");
-                viewManagerModel.firePropertyChange();
+                // Start quiz for the selected deck
+                appBuilder.startQuizForDeck(selectedDeck);
             }
         } else if (src == editButton) {
             JOptionPane.showMessageDialog(this, "Use Case 4 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);

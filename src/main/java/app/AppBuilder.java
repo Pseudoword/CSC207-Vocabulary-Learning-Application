@@ -1,6 +1,9 @@
 package app;
 
+import java.util.Collections;
+import java.util.Random;
 import data_access.FileUserDataAccessObject;
+import entity.Deck;
 import entity.MultipleChoiceQuestion;
 import entity.UserFactory;
 import entity.Vocabulary;
@@ -91,10 +94,51 @@ public class AppBuilder {
     private StudyFlashCardsInteractor StudyFlashCardsInteractor;
     private StudyFlashCardsView studyFlashCardsView;
     private StudyFlashCardsController studyFlashCardsController;
+    private Deck currentDeck;
+    private List<Deck> allDecks;
+
+
 
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
+        initializeDecks();
+    }
+
+    private void initializeDecks() {
+        allDecks = new ArrayList<>();
+
+        Deck deck1 = new Deck("Deck 1", "Sample deck 1");
+        deck1.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
+        deck1.addWord(new Vocabulary("dog", "A common domesticated animal", false));
+
+        Deck deck2 = new Deck("Deck 2", "Sample deck 2");
+        deck2.addWord(new Vocabulary("red", "The color of fire and blood", false));
+        deck2.addWord(new Vocabulary("cat", "A small domesticated feline", false));
+
+        Deck deck3 = new Deck("Deck 3", "Sample deck 3");
+        deck3.addWord(new Vocabulary("house", "A building for human habitation", false));
+
+        allDecks.add(deck1);
+        allDecks.add(deck2);
+        allDecks.add(deck3);
+    }
+
+    public List<Deck> getAllDecks() {
+        return allDecks;
+    }
+
+    public void refreshDecksView() {
+        // Remove old DecksView
+        cardPanel.remove(decksView);
+
+        // Create new DecksView (will use the same deck instances from allDecks)
+        decksView = new DecksView(viewManagerModel, this);
+        cardPanel.add(decksView, decksView.getViewName());
+
+        // Refresh the panel
+        cardPanel.revalidate();
+        cardPanel.repaint();
     }
 
     public AppBuilder addSignupView() {
@@ -119,39 +163,39 @@ public class AppBuilder {
     }
 
     public AppBuilder addDecksView() {
-//        final StudyFlashCardsOutputBoundary outputBoundary = new StudyFlashCardsPresenter(viewManagerModel, studyFlashCardsViewModel);///
-//        final StudyFlashCardsInputBoundary interactor = new StudyFlashCardsInteractor(userDataAccessObject, outputBoundary);///
-//        StudyFlashCardsController controller = new StudyFlashCardsController(interactor);///
-//        studyFlashCardsView.setController(controller);///
-
-        decksView = new DecksView(viewManagerModel);///studyFlashCardsController
+        decksView = new DecksView(viewManagerModel, this);
         cardPanel.add(decksView, decksView.getViewName());
         return this;
     }
 
-    public AppBuilder addMultipleChoiceQuizUseCase() {
+    public AppBuilder addMultipleChoiceQuizUseCaseForDeck(Deck deck) {
+        this.currentDeck = deck;
+
         multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
 
-        originalQuestions = new ArrayList<>(List.of( // Store as originalQuestions
-                new MultipleChoiceQuestion(
-                        new Vocabulary("apple", "A fruit that is typically red or green", false),
-                        List.of("A fruit that is typically red or green", "alt definition 1", "alt definition 2", "alt definition 3"),
-                        0
-                ),
-                new MultipleChoiceQuestion(
-                        new Vocabulary("dog", "A common domesticated animal", false),
-                        List.of("alt definition 1", "A common domesticated animal", "alt definition 2", "alt definition 3"),
-                        1
-                ),
-                new MultipleChoiceQuestion(
-                        new Vocabulary("red", "The color of fire and blood", false),
-                        List.of("The color of fire and blood", "alt definition 1", "alt definition 2", "alt definition 3"),
-                        0
-                )
-        ));
+        ArrayList<MultipleChoiceQuestion> questions = new ArrayList<>();
+        Random random = new Random();
+        for (Vocabulary vocab : deck.getVocabularies()) {
+            // Create choices list with correct answer and dummy wrong answers
+            List<String> choices = new ArrayList<>();
+            choices.add(vocab.getDefinition()); // Correct answer
+            choices.add("Wrong definition 1");
+            choices.add("Wrong definition 2");
+            choices.add("Wrong definition 3");
+
+            // Shuffle the choices
+            Collections.shuffle(choices, random);
+
+            // Find the index of the correct answer after shuffling
+            int correctIndex = choices.indexOf(vocab.getDefinition());
+
+            questions.add(new MultipleChoiceQuestion(vocab, choices, correctIndex));
+        }
+
+        originalQuestions = questions;
 
         MultipleChoiceQuizOutputBoundary outputBoundary = new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
-        multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(originalQuestions, outputBoundary);
+        multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(questions, outputBoundary);
         multipleChoiceQuizController = new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
         multipleChoiceQuizView = new MultipleChoiceQuizView(
                 multipleChoiceQuizController,
@@ -161,37 +205,87 @@ public class AppBuilder {
         );
 
         cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
+        multipleChoiceQuizController.startQuiz(deck.getTitle());
+        multipleChoiceQuizView.refreshView();
 
         return this;
+    }
+
+    public AppBuilder addMultipleChoiceQuizUseCase() {
+        // Create a sample deck
+        Deck sampleDeck = new Deck("Sample", "Sample deck");
+        sampleDeck.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
+        sampleDeck.addWord(new Vocabulary("dog", "A common domesticated animal", false));
+        sampleDeck.addWord(new Vocabulary("red", "The color of fire and blood", false));
+
+        return addMultipleChoiceQuizUseCaseForDeck(sampleDeck);
+    }
+
+    // Update createRetakeQuiz to mark deck as taken and handle mastery
+    public void createRetakeQuiz(List<MultipleChoiceQuestion> questions) {
+        // Mark the deck as having been attempted
+        if (currentDeck != null) {
+            currentDeck.markQuizTaken();
+        }
+
+        // Remove old quiz view
+        cardPanel.remove(multipleChoiceQuizView);
+
+        // Reset the view model
+        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
+
+        // Create new presenter
+        MultipleChoiceQuizOutputBoundary outputBoundary =
+                new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
+
+        // Create new interactor with the questions (either incorrect or all)
+        multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(questions, outputBoundary);
+
+        // Create new controller
+        multipleChoiceQuizController =
+                new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
+
+        // Create new view
+        multipleChoiceQuizView = new MultipleChoiceQuizView(
+                multipleChoiceQuizController,
+                multipleChoiceQuizViewModel,
+                viewManagerModel,
+                this
+        );
+
+        // Add new view to card panel
+        cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
+
+        // Revalidate and repaint the card panel
+        cardPanel.revalidate();
+        cardPanel.repaint();
+
+        multipleChoiceQuizController.startQuiz(currentDeck != null ? currentDeck.getTitle() : "");
+        multipleChoiceQuizView.refreshView();
+
+        // Navigate to the new quiz
+        viewManagerModel.setState("MultipleChoiceQuiz");
+        viewManagerModel.firePropertyChange();
+    }
+
+    // Add method to start quiz from a deck
+    public void startQuizForDeck(Deck deck) {
+        // Remove old quiz if exists
+        if (multipleChoiceQuizView != null) {
+            cardPanel.remove(multipleChoiceQuizView);
+        }
+
+        // Create new quiz for this deck
+        addMultipleChoiceQuizUseCaseForDeck(deck);
+
+        // Navigate to quiz
+        viewManagerModel.setState("MultipleChoiceQuiz");
+        viewManagerModel.firePropertyChange();
     }
 
     public List<MultipleChoiceQuestion> getOriginalQuestions() {
         return new ArrayList<>(originalQuestions);
     }
-
-    public void createRetakeQuiz(List<MultipleChoiceQuestion> questions) {
-        cardPanel.remove(multipleChoiceQuizView);
-
-        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
-        MultipleChoiceQuizOutputBoundary outputBoundary = new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
-        multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(questions, outputBoundary);
-        multipleChoiceQuizController = new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
-
-        multipleChoiceQuizView = new MultipleChoiceQuizView(
-                multipleChoiceQuizController,
-                multipleChoiceQuizViewModel,
-                viewManagerModel,
-                this
-        );
-
-        cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
-        cardPanel.revalidate();
-        cardPanel.repaint();
-
-        viewManagerModel.setState("MultipleChoiceQuiz");
-        viewManagerModel.firePropertyChange();
-    }
-
 
     public AppBuilder addSignupUseCase() {
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
@@ -264,28 +358,11 @@ public class AppBuilder {
         return this;
     }
 
-    public AppBuilder addStudyFlashCardsView() {
-        studyFlashCardsViewModel = new StudyFlashCardsViewModel();
-        final StudyFlashCardsOutputBoundary outputBoundary = new StudyFlashCardsPresenter(viewManagerModel, studyFlashCardsViewModel);
-        final StudyFlashCardsInputBoundary interactor = new StudyFlashCardsInteractor(userDataAccessObject, outputBoundary);
-        StudyFlashCardsController controller = new StudyFlashCardsController(interactor);
-        studyFlashCardsView = new StudyFlashCardsView(studyFlashCardsViewModel, controller, viewManagerModel);
-
-        cardPanel.add(studyFlashCardsView, studyFlashCardsView.getViewName());
-        cardPanel.revalidate();
-        cardPanel.repaint();
-        return this;
+    public void markCurrentDeckAsTaken() {
+        if (currentDeck != null) {
+            currentDeck.markQuizTaken();
+        }
     }
-
-    public AppBuilder addStudyFlashCardsUseCase() {
-        final StudyFlashCardsOutputBoundary outputBoundary = new StudyFlashCardsPresenter(viewManagerModel, studyFlashCardsViewModel);
-        final StudyFlashCardsInputBoundary interactor = new StudyFlashCardsInteractor(userDataAccessObject, outputBoundary);//what do i put here
-        StudyFlashCardsController controller = new StudyFlashCardsController(interactor);
-        studyFlashCardsView.setController(controller);
-
-        return this;
-    }
-
 
     public JFrame build() {
         final JFrame application = new JFrame("Vocabulary Learning Application");
