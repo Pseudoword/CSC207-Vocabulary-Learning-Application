@@ -17,10 +17,12 @@ public class Main {
                 .addAddFlashcardToDeckView()
                 .addMultipleChoiceQuizUseCase()
                 .addAddFlashcardToDeckUseCase()
+                .addStudyFlashCardsView()
+                .addStudyFlashCardsUseCase()
                 .build();
 
-       application.pack();
-       application.setLocationRelativeTo(null);
-       application.setVisible(true);
+        application.pack();
+        application.setLocationRelativeTo(null);
+        application.setVisible(true);
     }
 }

@@ -46,6 +46,10 @@ public class Deck {
         vocabularies.add(word);
     }
 
+    public boolean isEmpty() {
+        return vocabularies.isEmpty();
+    }
+
     public void removeWord(Vocabulary word) {
         vocabularies.remove(word);
     }

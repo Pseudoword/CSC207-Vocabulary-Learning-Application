@@ -223,7 +223,7 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
             LoggedInState state = (LoggedInState) evt.getNewValue();
-            username.setText("Currently logged in: " + state.getUsername());
+            username.setText("Currently logged in: " + state.getUsername());////////////////////////////
         } else if (evt.getPropertyName().equals("password")) {
             LoggedInState state = (LoggedInState) evt.getNewValue();
             if (state.getPasswordError() == null) {
