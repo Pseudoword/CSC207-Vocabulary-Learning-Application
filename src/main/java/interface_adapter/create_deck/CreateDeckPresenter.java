@@ -31,6 +31,10 @@ public class CreateDeckPresenter implements CreateDeckOutputBoundary {
 
         this.createDeckViewModel.setState(state);
         this.createDeckViewModel.firePropertyChange();
+
+        // Navigate to decks view after successful creation
+        this.viewManagerModel.setState("decks");
+        this.viewManagerModel.firePropertyChange();
     }
 
     @Override
