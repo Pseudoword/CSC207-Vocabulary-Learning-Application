@@ -3,6 +3,7 @@ package app;
 import java.util.Collections;
 import java.util.Random;
 import data_access.FileUserDataAccessObject;
+import data_access.FileDeckDataAccessObject;
 import entity.Deck;
 import entity.MultipleChoiceQuestion;
 import entity.UserFactory;
@@ -70,8 +71,8 @@ public class AppBuilder {
     // DAO version using local file storage
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
 
-    // DAO version using a shared external database
-    private final DictionaryAPIDataAccess dataAccessObject = new DictionaryAPIDataAccess();
+    // DAO version using file-based storage for persistence
+    private final FileDeckDataAccessObject dataAccessObject = new FileDeckDataAccessObject("decks.csv");
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -96,10 +97,10 @@ public class AppBuilder {
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
-        initializeDecks();
+        // initializeDecks();
     }
 
-    private void initializeDecks() {
+/*    private void initializeDecks() {
 
         Deck deck1 = new Deck("Deck 1", "Sample deck 1");
         deck1.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
@@ -115,7 +116,7 @@ public class AppBuilder {
         dataAccessObject.save(deck1);
         dataAccessObject.save(deck2);
         dataAccessObject.save(deck3);
-    }
+    }*/
 
     public List<Deck> getAllDecks() {
         return dataAccessObject.getAllDecks();
