@@ -13,5 +13,10 @@ public interface UpdateDeckDetailsDataAccessInterface {
      */
     boolean existsByTitle(String title);
 
+    /**
+     * Updates the deck with oldTitle to the new deck.
+     * @param oldTitle the title of the deck to be updated
+     * @param deck     the new deck
+     */
     void updateDeckDetails(String oldTitle, Deck deck);
 }
