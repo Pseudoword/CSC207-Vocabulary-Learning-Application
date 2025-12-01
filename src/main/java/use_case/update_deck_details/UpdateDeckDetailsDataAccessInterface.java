@@ -19,4 +19,10 @@ public interface UpdateDeckDetailsDataAccessInterface {
      * @param deck     the new deck
      */
     void updateDeckDetails(String oldTitle, Deck deck);
+
+    /**
+     * Fetches the deck with the given title.
+     * @param title the title of the deck
+     */
+    Deck getDeck(String title);
 }
