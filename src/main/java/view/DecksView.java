@@ -35,22 +35,9 @@ public class DecksView extends JPanel implements ActionListener {
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         DefaultListModel<Deck> listModel = new DefaultListModel<>();
-
-        Deck deck1 = new Deck("Deck 1", "Sample deck 1");
-        Vocabulary apple = new Vocabulary("apple", "A fruit that is typically red or green", false);
-        deck1.addWord(apple);
-        deck1.addWord(new Vocabulary("dog", "A common domesticated animal", false));
-
-        Deck deck2 = new Deck("Deck 2", "Sample deck 2");
-        deck2.addWord(new Vocabulary("red", "The color of fire and blood", false));
-        deck2.addWord(new Vocabulary("cat", "A small domesticated feline", false));
-
-        Deck deck3 = new Deck("Deck 3", "Sample deck 3");
-        deck3.addWord(new Vocabulary("house", "A building for human habitation", false));
-
-        listModel.addElement(deck1);
-        listModel.addElement(deck2);
-        listModel.addElement(deck3);
+        for (Deck deck : appBuilder.getAllDecks()) {
+            listModel.addElement(deck);
+        }
 
         deckList = new JList<>(listModel);
         deckList.setCellRenderer(new DeckListCellRenderer());
