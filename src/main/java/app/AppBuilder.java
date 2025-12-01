@@ -90,7 +90,6 @@ public class AppBuilder {
     private MultipleChoiceQuizView multipleChoiceQuizView;
     private DecksView decksView;
     private Deck currentDeck;
-    private List<Deck> allDecks;
 
 
 
@@ -101,7 +100,6 @@ public class AppBuilder {
     }
 
     private void initializeDecks() {
-        allDecks = new ArrayList<>();
 
         Deck deck1 = new Deck("Deck 1", "Sample deck 1");
         deck1.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
@@ -114,13 +112,13 @@ public class AppBuilder {
         Deck deck3 = new Deck("Deck 3", "Sample deck 3");
         deck3.addWord(new Vocabulary("house", "A building for human habitation", false));
 
-        allDecks.add(deck1);
-        allDecks.add(deck2);
-        allDecks.add(deck3);
+        dataAccessObject.save(deck1);
+        dataAccessObject.save(deck2);
+        dataAccessObject.save(deck3);
     }
 
     public List<Deck> getAllDecks() {
-        return allDecks;
+        return dataAccessObject.getAllDecks();
     }
 
     public void refreshDecksView() {

@@ -8,11 +8,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-public class DecksView extends JPanel implements ActionListener {
+public class DecksView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private final String viewName = "decks";
     private final JList<Deck> deckList;
+    private final DefaultListModel<Deck> listModel;
     private final JButton studyAllButton;
     private final JButton reviewButton;
     private final JButton editButton;
@@ -24,6 +27,7 @@ public class DecksView extends JPanel implements ActionListener {
     public DecksView(ViewManagerModel viewManagerModel, AppBuilder appBuilder) {
         this.viewManagerModel = viewManagerModel;
         this.appBuilder = appBuilder;
+        this.viewManagerModel.addPropertyChangeListener(this);
 
         this.setPreferredSize(new Dimension(900, 700));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -34,10 +38,8 @@ public class DecksView extends JPanel implements ActionListener {
         title.setForeground(new Color(199, 21, 133));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        DefaultListModel<Deck> listModel = new DefaultListModel<>();
-        for (Deck deck : appBuilder.getAllDecks()) {
-            listModel.addElement(deck);
-        }
+        listModel = new DefaultListModel<>();
+        refreshDecks();
 
         deckList = new JList<>(listModel);
         deckList.setCellRenderer(new DeckListCellRenderer());
@@ -84,6 +86,16 @@ public class DecksView extends JPanel implements ActionListener {
         this.add(Box.createVerticalStrut(20));
         this.add(backButton);
         this.add(Box.createVerticalGlue());
+    }
+
+    /**
+     * Refreshes the deck list from the data access object.
+     */
+    private void refreshDecks() {
+        listModel.clear();
+        for (Deck deck : appBuilder.getAllDecks()) {
+            listModel.addElement(deck);
+        }
     }
 
     private JButton createPinkButton(String text, Dimension size, Font font) {
@@ -141,6 +153,17 @@ public class DecksView extends JPanel implements ActionListener {
         } else if (src == backButton) {
             viewManagerModel.setState("logged in");
             viewManagerModel.firePropertyChange();
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("state")) {
+            String newState = (String) evt.getNewValue();
+            // Refresh the deck list when navigating to this view
+            if (newState.equals(viewName)) {
+                refreshDecks();
+            }
         }
     }
 

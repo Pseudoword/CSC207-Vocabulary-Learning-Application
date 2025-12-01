@@ -11,7 +11,9 @@ import use_case.add_flashcard_to_deck.AddFlashcardToDeckDataAccessInterface;
 import use_case.create_deck.CreateDeckDataAccessInterface;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,6 +41,14 @@ public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInte
 
     @Override
     public boolean existsByTitle(String deckTitle) { return savedDecks.containsKey(deckTitle); }
+
+    /**
+     * Gets all decks.
+     * @return a list of all decks
+     */
+    public List<Deck> getAllDecks() {
+        return new ArrayList<>(savedDecks.values());
+    }
 
     @Override
     public String fetchDefinition(String word) {
