@@ -213,7 +213,7 @@ public class AppBuilder {
         }
 
         editDeckView = new EditDeckView(viewManagerModel, deck, updateDeckDetailsViewModel,
-                deleteFlashcardFromDeckViewModel);
+                deleteFlashcardFromDeckViewModel, addFlashcardToDeckViewModel);
         this.addDeleteFlashcardFromDeckUseCase();
 
         cardPanel.add(editDeckView, editDeckView.getViewName());

@@ -6,7 +6,7 @@ package use_case.delete_flashcard_from_deck;
 public interface DeleteFlashcardFromDeckInputBoundary {
 
     /**
-     * Executes the Add Flashcard to Deck Use Case.
+     * Executes the Delete Flashcard from Deck Use Case.
      * @param inputData the input data
      */
     void execute(DeleteFlashcardFromDeckInputData inputData);

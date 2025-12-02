@@ -6,7 +6,7 @@ import entity.Vocabulary;
 /**
  * The Interactor for deleting a flashcard from a deck.
  */
-public class DeleteFlashcardFromDeckInteractor implements DeleteFlashcardFromDeckInputBoundary{
+public class DeleteFlashcardFromDeckInteractor implements DeleteFlashcardFromDeckInputBoundary {
     private final DeleteFlashcardFromDeckDataAccessInterface dataAccessObject;
     private final DeleteFlashcardFromDeckOutputBoundary outputBoundary;
 

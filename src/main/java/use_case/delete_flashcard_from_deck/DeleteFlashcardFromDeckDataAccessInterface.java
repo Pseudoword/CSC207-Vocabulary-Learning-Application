@@ -3,7 +3,7 @@ package use_case.delete_flashcard_from_deck;
 import entity.Deck;
 
 /**
- * The Data Access Interface for the Add Flashcard to Deck Use Case.
+ * The Data Access Interface for the Delete Flashcard from Deck Use Case.
  */
 public interface DeleteFlashcardFromDeckDataAccessInterface {
 
