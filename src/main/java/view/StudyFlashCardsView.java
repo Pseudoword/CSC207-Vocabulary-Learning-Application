@@ -1,5 +1,6 @@
 package view;
 
+import entity.Deck;
 import interface_adapter.StudyFlashCards.StudyFlashCardsController;
 import interface_adapter.StudyFlashCards.StudyFlashCardsState;
 import interface_adapter.StudyFlashCards.StudyFlashCardsViewModel;
@@ -34,13 +35,12 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
     private final String deckName;
 
 
-    public StudyFlashCardsView(StudyFlashCardsViewModel viewModel, StudyFlashCardsController controller, ViewManagerModel viewManagerModel) {//StudyFlashCardsViewModel viewModel, StudyFlashCardController controller// is allowed here
+    public StudyFlashCardsView(StudyFlashCardsViewModel viewModel, StudyFlashCardsController controller, ViewManagerModel viewManagerModel, String deckName) {//StudyFlashCardsViewModel viewModel, StudyFlashCardController controller// is allowed here
         this.viewModel = viewModel;
         this.controller = controller;
         this.viewManagerModel = viewManagerModel;
         viewModel.addPropertyChangeListener(this);
-        this.deckName = "testDeck"; ////////////////////////////////////requries fixing
-        StudyFlashCardsInputData inputData = new StudyFlashCardsInputData(deckName);
+        this.deckName = deckName;
 
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(new Color(255, 240, 245));
