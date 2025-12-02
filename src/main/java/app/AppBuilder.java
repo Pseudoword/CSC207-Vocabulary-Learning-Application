@@ -27,6 +27,9 @@ import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.update_deck_details.UpdateDeckDetailsController;
+import interface_adapter.update_deck_details.UpdateDeckDetailsPresenter;
+import interface_adapter.update_deck_details.UpdateDeckDetailsViewModel;
 import use_case.StudyFlashCards.StudyFlashCardsDataAccessInterface;
 import use_case.StudyFlashCards.StudyFlashCardsInputBoundary;
 import use_case.StudyFlashCards.StudyFlashCardsInteractor;
@@ -150,6 +153,33 @@ public class AppBuilder {
         decksView = new DecksView(viewManagerModel, this, updateDeckDetailsViewModel);
         cardPanel.add(decksView, decksView.getViewName());
         return this;
+    }
+
+    public void refreshDecksView() {
+        // Remove old DecksView
+        cardPanel.remove(decksView);
+
+        // Create new DecksView (will use the same deck instances from allDecks)
+        decksView = new DecksView(viewManagerModel, this, updateDeckDetailsViewModel);
+        cardPanel.add(decksView, decksView.getViewName());
+
+        // Refresh the panel
+        cardPanel.revalidate();
+        cardPanel.repaint();
+    }
+
+    public void showEditDeckView(Deck deck) {
+        if (editDeckView != null) {
+            cardPanel.remove(editDeckView);
+        }
+
+        editDeckView = new EditDeckView(viewManagerModel, deck, updateDeckDetailsViewModel);
+        cardPanel.add(editDeckView, editDeckView.getViewName());
+        cardPanel.revalidate();
+        cardPanel.repaint();
+
+        viewManagerModel.setState(editDeckView.getViewName());
+        viewManagerModel.firePropertyChange();
     }
 
     public AppBuilder addStudyFlashCardsUseCaseForDeck(Deck deck) {
