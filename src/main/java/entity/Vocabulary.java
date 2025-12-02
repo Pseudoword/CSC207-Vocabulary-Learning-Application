@@ -4,6 +4,7 @@ public class Vocabulary {
 
     private final String word;
     private final String definition;
+    private Boolean flagged;
     private Boolean incorrect;
 
 
@@ -11,6 +12,7 @@ public class Vocabulary {
         this.word = word;
         this.definition = definition;
         this.incorrect = incorrect;
+        this.flagged = false;
     }
 
     public String getWord() {
@@ -32,5 +34,9 @@ public class Vocabulary {
     public boolean isIncorrect() {
         return incorrect;
     }
+
+    public void setFlagged(Boolean flagged) {this.flagged = flagged;}
+
+    public boolean getFlagged() {return flagged;}
 
 }

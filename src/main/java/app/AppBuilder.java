@@ -168,6 +168,33 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder addStudyFlashCardsUseCaseForDeck(Deck deck) {
+        this.currentDeck = deck;
+
+        studyFlashCardsViewModel = new StudyFlashCardsViewModel();
+        final StudyFlashCardsOutputBoundary outputBoundary = new StudyFlashCardsPresenter(viewManagerModel, studyFlashCardsViewModel);
+        final StudyFlashCardsInputBoundary interactor = new StudyFlashCardsInteractor(userDataAccessObject, outputBoundary);
+        StudyFlashCardsController controller = new StudyFlashCardsController(interactor);
+        studyFlashCardsView = new StudyFlashCardsView(studyFlashCardsViewModel, controller, viewManagerModel, deck.getTitle());
+
+        cardPanel.add(studyFlashCardsView, studyFlashCardsView.getViewName());
+        cardPanel.revalidate();
+        cardPanel.repaint();
+        studyFlashCardsView.setController(controller);
+        return this;
+    }
+
+    public void startStudyFlashCardsForDeck(Deck deck) {
+        if (studyFlashCardsView != null) {
+            cardPanel.remove(studyFlashCardsView);
+        }
+
+        addStudyFlashCardsUseCaseForDeck(deck);
+
+        viewManagerModel.setState("StudyFlashCards");
+        viewManagerModel.firePropertyChange();
+    }
+
     public AppBuilder addMultipleChoiceQuizUseCaseForDeck(Deck deck) {
         this.currentDeck = deck;
 
@@ -220,7 +247,7 @@ public class AppBuilder {
 
         return addMultipleChoiceQuizUseCaseForDeck(sampleDeck);
     }
-
+/// /
     // Update createRetakeQuiz to mark deck as taken and handle mastery
     public void createRetakeQuiz(List<MultipleChoiceQuestion> questions) {
         // Mark the deck as having been attempted

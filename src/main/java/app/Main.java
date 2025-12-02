@@ -17,8 +17,6 @@ public class Main {
                 .addAddFlashcardToDeckView()
                 .addMultipleChoiceQuizUseCase()
                 .addAddFlashcardToDeckUseCase()
-                .addStudyFlashCardsView()
-                .addStudyFlashCardsUseCase()
                 .build();
 
         application.pack();

@@ -128,14 +128,11 @@ public class DecksView extends JPanel implements ActionListener {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
 
         if (src == studyAllButton) {
-            String selectedDeck = deckList.getSelectedValue();
+            Deck selectedDeck = deckList.getSelectedValue();
             if (selectedDeck == null) {
                 JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
             } else {
-                //studyFlashCardsController.execute(selectedDeck); ///////////////
-                //StudyFlashCardsInputData inputData = new StudyFlashCardsInputData("testDeck");/////////////////////
-                viewManagerModel.setState("StudyFlashCards");
-                viewManagerModel.firePropertyChange();
+                appBuilder.startStudyFlashCardsForDeck(selectedDeck);
             }
         } else if (src == reviewButton) {
             JOptionPane.showMessageDialog(this, "Use Case 6 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);

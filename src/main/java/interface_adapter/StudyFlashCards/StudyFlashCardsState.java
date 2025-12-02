@@ -19,8 +19,8 @@ public class StudyFlashCardsState {
         this.successMessage = copy.successMessage;
     }
     public StudyFlashCardsState(){}
-    public String getWord() {return word;}
 
+    public String getWord() {return word;}
     public void setDeckName(String deckName) {this.deckName = deckName;}
     public String getDeckName(){return deckName;}
 
