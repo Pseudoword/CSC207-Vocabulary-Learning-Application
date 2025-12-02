@@ -11,6 +11,7 @@ import entity.Vocabulary;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
+import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -72,7 +73,7 @@ public class AppBuilder {
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
 
     // DAO version using file-based storage for persistence
-    private final FileDeckDataAccessObject dataAccessObject = new FileDeckDataAccessObject("decks.csv");
+    private final FileDeckDataAccessObject dataAccessObject = new FileDeckDataAccessObject();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -281,6 +282,16 @@ public class AppBuilder {
 
         LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
+
+        loggedInViewModel.addPropertyChangeListener(evt -> {
+            if (evt.getPropertyName().equals("state")) {
+                LoggedInState state = (LoggedInState) evt.getNewValue();
+                if (state.getUsername() != null && !state.getUsername().isEmpty()) {
+                    dataAccessObject.setCurrentUser(state.getUsername());
+                }
+            }
+        });
+
         return this;
     }
 

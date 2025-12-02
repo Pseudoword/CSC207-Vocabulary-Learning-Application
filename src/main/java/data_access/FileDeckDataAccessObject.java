@@ -20,13 +20,25 @@ public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInt
     private static final String WORD_DELIMITER = ";";
     private static final String FIELD_DELIMITER = ":";
 
-    private final File csvFile;
+    private File csvFile;
     private final Map<String, Deck> decks = new LinkedHashMap<>();
-    private final DictionaryAPIDataAccess apiDataAccess;  // For fetching definitions
+    private final DictionaryAPIDataAccess apiDataAccess;
+    private String currentUsername;
 
-    public FileDeckDataAccessObject(String csvPath) {
-        this.csvFile = new File(csvPath);
+    public FileDeckDataAccessObject() {
         this.apiDataAccess = new DictionaryAPIDataAccess();
+
+    }
+
+    /**
+     * Set the current user and load their decks.
+     * @param username the username of the current user
+     */
+    public void setCurrentUser(String username) {
+        this.currentUsername = username;
+        this.csvFile = new File("decks_" + username + ".csv");
+
+        decks.clear(); // Clear previous user's decks
 
         if (!csvFile.exists()) {
             initializeWithSampleDecks();
@@ -128,6 +140,11 @@ public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInt
      * Save all decks to file.
      */
     private void save() {
+        if (csvFile == null) {
+            System.err.println("Cannot save: no user set");
+            return;
+        }
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFile))) {
             for (Deck deck : decks.values()) {
                 String line = serializeDeck(deck);
@@ -213,5 +230,8 @@ public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInt
             return true;
         }
         return false;
+    }
+    public String getCurrentUsername() {
+        return currentUsername;
     }
 }
