@@ -87,9 +87,10 @@ public class MultipleChoiceQuizInteractor implements MultipleChoiceQuizInputBoun
     private void handleNextQuestion() {
         currentIndex++;
         if (currentIndex >= questions.size()) {
-            boolean hasMistakes = !incorrectQuestions.isEmpty();
+            boolean allCorrect = incorrectQuestions.isEmpty();
+            deck.setLastAttemptAllCorrect(allCorrect);
             MultipleChoiceQuizOutputData outputData = new MultipleChoiceQuizOutputData(
-                    hasMistakes,
+                    !allCorrect, // hasMistakes
                     correctCount,
                     questions.size()
             );

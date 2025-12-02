@@ -45,7 +45,7 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
         refreshDecks();
 
         deckList = new JList<>(listModel);
-        deckList.setCellRenderer(new DeckListCellRenderer());
+        deckList.setCellRenderer(new DeckListCellRenderer()); 
         deckList.setFixedCellHeight(30);
         deckList.setVisibleRowCount(5);
         deckList.setSelectionBackground(new Color(255, 240, 245));
