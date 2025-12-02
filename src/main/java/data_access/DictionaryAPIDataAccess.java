@@ -8,15 +8,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckDataAccessInterface;
+import use_case.create_deck.CreateDeckDataAccessInterface;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Data Access Object that interacts with the Merriam-Webster Dictionary API.
  */
-public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInterface {
+public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInterface, CreateDeckDataAccessInterface {
 
     private static final String API_URL = "https://www.dictionaryapi.com/api/v3/references/learners/json";
     private static final String API_KEY = "b39169cd-e329-4bb0-9b46-31325235f40e";
@@ -34,6 +37,17 @@ public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInte
     @Override
     public void save(Deck deck) {
         savedDecks.put(deck.getTitle(), deck);
+    }
+
+    @Override
+    public boolean existsByTitle(String deckTitle) { return savedDecks.containsKey(deckTitle); }
+
+    /**
+     * Gets all decks.
+     * @return a list of all decks
+     */
+    public List<Deck> getAllDecks() {
+        return new ArrayList<>(savedDecks.values());
     }
 
     @Override

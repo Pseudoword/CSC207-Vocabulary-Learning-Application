@@ -3,6 +3,7 @@ package app;
 import java.util.Collections;
 import java.util.Random;
 import data_access.FileUserDataAccessObject;
+import data_access.FileDeckDataAccessObject;
 import entity.Deck;
 import entity.MultipleChoiceQuestion;
 import entity.UserFactory;
@@ -13,6 +14,7 @@ import interface_adapter.StudyFlashCards.StudyFlashCardsViewModel;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
+import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -51,6 +53,12 @@ import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckViewModel;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckInputBoundary;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckInteractor;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckOutputBoundary;
+import interface_adapter.create_deck.CreateDeckController;
+import interface_adapter.create_deck.CreateDeckPresenter;
+import interface_adapter.create_deck.CreateDeckViewModel;
+import use_case.create_deck.CreateDeckInputBoundary;
+import use_case.create_deck.CreateDeckInteractor;
+import use_case.create_deck.CreateDeckOutputBoundary;
 
 import javax.swing.*;
 import java.awt.*;
@@ -71,8 +79,8 @@ public class AppBuilder {
     // DAO version using local file storage
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
 
-    // DAO version using a shared external database
-    private final DictionaryAPIDataAccess dataAccessObject = new DictionaryAPIDataAccess();
+    // DAO version using file-based storage for persistence
+    private final FileDeckDataAccessObject dataAccessObject = new FileDeckDataAccessObject();
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -82,6 +90,8 @@ public class AppBuilder {
     private LoginView loginView;
     private final AddFlashcardToDeckViewModel addFlashcardToDeckViewModel = new AddFlashcardToDeckViewModel();
     private AddFlashcardToDeckView addFlashcardToDeckView;
+    private final CreateDeckViewModel createDeckViewModel = new CreateDeckViewModel();
+    private CreateDeckView createDeckView;
     private MultipleChoiceQuizViewModel multipleChoiceQuizViewModel;
     private MultipleChoiceQuizController multipleChoiceQuizController;
     private MultipleChoiceQuizInteractor multipleChoiceQuizInteractor;
@@ -95,37 +105,16 @@ public class AppBuilder {
     private StudyFlashCardsView studyFlashCardsView;
     private StudyFlashCardsController studyFlashCardsController;
     private Deck currentDeck;
-    private List<Deck> allDecks;
 
 
 
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
-        initializeDecks();
-    }
-
-    private void initializeDecks() {
-        allDecks = new ArrayList<>();
-
-        Deck deck1 = new Deck("Deck 1", "Sample deck 1");
-        deck1.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
-        deck1.addWord(new Vocabulary("dog", "A common domesticated animal", false));
-
-        Deck deck2 = new Deck("Deck 2", "Sample deck 2");
-        deck2.addWord(new Vocabulary("red", "The color of fire and blood", false));
-        deck2.addWord(new Vocabulary("cat", "A small domesticated feline", false));
-
-        Deck deck3 = new Deck("Deck 3", "Sample deck 3");
-        deck3.addWord(new Vocabulary("house", "A building for human habitation", false));
-
-        allDecks.add(deck1);
-        allDecks.add(deck2);
-        allDecks.add(deck3);
     }
 
     public List<Deck> getAllDecks() {
-        return allDecks;
+        return dataAccessObject.getAllDecks();
     }
 
     public void refreshDecksView() {
@@ -333,6 +322,16 @@ public class AppBuilder {
 
         LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
+
+        loggedInViewModel.addPropertyChangeListener(evt -> {
+            if (evt.getPropertyName().equals("state")) {
+                LoggedInState state = (LoggedInState) evt.getNewValue();
+                if (state.getUsername() != null && !state.getUsername().isEmpty()) {
+                    dataAccessObject.setCurrentUser(state.getUsername());
+                }
+            }
+        });
+
         return this;
     }
 
@@ -382,6 +381,28 @@ public class AppBuilder {
 
         final AddFlashcardToDeckController controller = new AddFlashcardToDeckController(interactor);
         addFlashcardToDeckView.setController(controller);
+        return this;
+    }
+
+    public AppBuilder addCreateDeckView() {
+        createDeckView = new CreateDeckView(createDeckViewModel, viewManagerModel);
+        cardPanel.add(createDeckView, createDeckView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addCreateDeckUseCase() {
+        final CreateDeckOutputBoundary outputBoundary = new CreateDeckPresenter(
+                viewManagerModel,
+                createDeckViewModel
+        );
+
+        final CreateDeckInputBoundary interactor = new CreateDeckInteractor(
+                dataAccessObject,
+                outputBoundary
+        );
+
+        final CreateDeckController controller = new CreateDeckController(interactor);
+        createDeckView.setController(controller);
         return this;
     }
 

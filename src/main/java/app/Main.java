@@ -15,8 +15,10 @@ public class Main {
                 .addChangePasswordUseCase()
                 .addLogoutUseCase()
                 .addAddFlashcardToDeckView()
+                .addCreateDeckView()
                 .addMultipleChoiceQuizUseCase()
                 .addAddFlashcardToDeckUseCase()
+                .addCreateDeckUseCase()
                 .build();
 
         application.pack();

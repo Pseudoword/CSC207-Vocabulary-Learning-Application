@@ -139,7 +139,8 @@ public class LoggedInView extends JPanel implements ActionListener, PropertyChan
             viewManagerModel.setState("decks");
             viewManagerModel.firePropertyChange();
         } else if (source == newDeckButton) {
-            JOptionPane.showMessageDialog(this, "Use case 3 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
+            viewManagerModel.setState("create deck");
+            viewManagerModel.firePropertyChange();
         } else if (source == changePasswordButton) {
             showChangePasswordDialog();
         } else if (source == logoutButton) {
