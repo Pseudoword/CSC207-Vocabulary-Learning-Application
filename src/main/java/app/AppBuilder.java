@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Random;
 import data_access.FileUserDataAccessObject;
 import data_access.FileDeckDataAccessObject;
+import data_access.MultipleChoiceQuizDataAccessObject;
 import entity.Deck;
 import entity.MultipleChoiceQuestion;
 import entity.UserFactory;
@@ -46,6 +47,7 @@ import use_case.login.LoginOutputBoundary;
 import use_case.logout.LogoutInputBoundary;
 import use_case.logout.LogoutInteractor;
 import use_case.logout.LogoutOutputBoundary;
+import use_case.multiple_choice_quiz.MultipleChoiceQuizDataAccessInterface;
 import use_case.multiple_choice_quiz.MultipleChoiceQuizInteractor;
 import use_case.multiple_choice_quiz.MultipleChoiceQuizOutputBoundary;
 import use_case.signup.SignupInputBoundary;
@@ -73,6 +75,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
@@ -118,10 +121,38 @@ public class AppBuilder {
     private UpdateDeckDetailsViewModel updateDeckDetailsViewModel = new UpdateDeckDetailsViewModel();
     private UpdateDeckDetailsView updateDeckDetailsView;
     private EditDeckView editDeckView;
+    private MultipleChoiceQuizDataAccessInterface multipleChoiceQuizDataAccess;
+
+
+
 
 
     public AppBuilder() {
         cardPanel.setLayout(cardLayout);
+        initializeDecks();
+        multipleChoiceQuizDataAccess = new MultipleChoiceQuizDataAccessObject(allDecks);
+    }
+
+    private void initializeDecks() {
+        allDecks = new ArrayList<>();
+
+        Deck deck1 = new Deck("Deck 1", "Sample deck 1");
+        deck1.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
+        deck1.addWord(new Vocabulary("dog", "A common domesticated animal", false));
+        deck1.addWord(new Vocabulary("red", "The color of fire and blood", false));
+        deck1.addWord(new Vocabulary("cat", "A small domesticated feline", false));
+        deck1.addWord(new Vocabulary("house", "A building for human habitation", false));
+
+        Deck deck2 = new Deck("Deck 2", "Sample deck 2");
+        deck2.addWord(new Vocabulary("red", "The color of fire and blood", false));
+        deck2.addWord(new Vocabulary("cat", "A small domesticated feline", false));
+
+        Deck deck3 = new Deck("Deck 3", "Sample deck 3");
+        deck3.addWord(new Vocabulary("house", "A building for human habitation", false));
+
+        allDecks.add(deck1);
+        allDecks.add(deck2);
+        allDecks.add(deck3);
     }
 
     public List<Deck> getAllDecks() {
@@ -226,32 +257,27 @@ public class AppBuilder {
     public AppBuilder addMultipleChoiceQuizUseCaseForDeck(Deck deck) {
         this.currentDeck = deck;
 
-        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
-
-        ArrayList<MultipleChoiceQuestion> questions = new ArrayList<>();
-        Random random = new Random();
-        for (Vocabulary vocab : deck.getVocabularies()) {
-            // Create choices list with correct answer and dummy wrong answers
-            List<String> choices = new ArrayList<>();
-            choices.add(vocab.getDefinition()); // Correct answer
-            choices.add("Wrong definition 1");
-            choices.add("Wrong definition 2");
-            choices.add("Wrong definition 3");
-
-            // Shuffle the choices
-            Collections.shuffle(choices, random);
-
-            // Find the index of the correct answer after shuffling
-            int correctIndex = choices.indexOf(vocab.getDefinition());
-
-            questions.add(new MultipleChoiceQuestion(vocab, choices, correctIndex));
+        // Remove old quiz view if exists
+        if (multipleChoiceQuizView != null) {
+            cardPanel.remove(multipleChoiceQuizView);
         }
 
-        originalQuestions = questions;
+        // Create view model and presenter
+        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
+        MultipleChoiceQuizOutputBoundary outputBoundary =
+                new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
 
-        MultipleChoiceQuizOutputBoundary outputBoundary = new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
-        multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(questions, outputBoundary);
-        multipleChoiceQuizController = new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
+        // Use DAO for fetching deck questions
+        MultipleChoiceQuizDataAccessInterface quizDataAccess = new MultipleChoiceQuizDataAccessObject(allDecks);
+
+        // Create interactor and controller
+        multipleChoiceQuizInteractor =
+                new MultipleChoiceQuizInteractor(currentDeck, quizDataAccess, outputBoundary);
+
+        multipleChoiceQuizController =
+                new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
+
+        // Create view
         multipleChoiceQuizView = new MultipleChoiceQuizView(
                 multipleChoiceQuizController,
                 multipleChoiceQuizViewModel,
@@ -262,6 +288,10 @@ public class AppBuilder {
         cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
         multipleChoiceQuizController.startQuiz(deck.getTitle());
         multipleChoiceQuizView.refreshView();
+
+        // Navigate to quiz
+        viewManagerModel.setState("MultipleChoiceQuiz");
+        viewManagerModel.firePropertyChange();
 
         return this;
     }
@@ -275,32 +305,31 @@ public class AppBuilder {
 
         return addMultipleChoiceQuizUseCaseForDeck(sampleDeck);
     }
-/// /
-    // Update createRetakeQuiz to mark deck as taken and handle mastery
-    public void createRetakeQuiz(List<MultipleChoiceQuestion> questions) {
-        // Mark the deck as having been attempted
-        if (currentDeck != null) {
-            currentDeck.markQuizTaken();
+
+    // Start a quiz for a given deck
+    public void startQuizForDeck(Deck deck) {
+        this.currentDeck = deck;
+
+        // Remove old quiz view if exists
+        if (multipleChoiceQuizView != null) {
+            cardPanel.remove(multipleChoiceQuizView);
         }
 
-        // Remove old quiz view
-        cardPanel.remove(multipleChoiceQuizView);
-
-        // Reset the view model
+        // Create view model and presenter
         multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
-
-        // Create new presenter
         MultipleChoiceQuizOutputBoundary outputBoundary =
                 new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
 
-        // Create new interactor with the questions (either incorrect or all)
-        multipleChoiceQuizInteractor = new MultipleChoiceQuizInteractor(questions, outputBoundary);
+        // Create DAO for quiz use case
+        MultipleChoiceQuizDataAccessInterface quizDataAccess = new MultipleChoiceQuizDataAccessObject(allDecks);
 
-        // Create new controller
+        // Create interactor and controller
+        multipleChoiceQuizInteractor =
+                new MultipleChoiceQuizInteractor(deck, quizDataAccess, outputBoundary);
         multipleChoiceQuizController =
                 new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
 
-        // Create new view
+        // Create view
         multipleChoiceQuizView = new MultipleChoiceQuizView(
                 multipleChoiceQuizController,
                 multipleChoiceQuizViewModel,
@@ -308,35 +337,61 @@ public class AppBuilder {
                 this
         );
 
-        // Add new view to card panel
+        // Add view to card panel
         cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
 
-        // Revalidate and repaint the card panel
-        cardPanel.revalidate();
-        cardPanel.repaint();
-
-        multipleChoiceQuizController.startQuiz(currentDeck != null ? currentDeck.getTitle() : "");
+        // Start the quiz
+        multipleChoiceQuizController.startQuiz(deck.getTitle());
         multipleChoiceQuizView.refreshView();
-
-        // Navigate to the new quiz
-        viewManagerModel.setState("MultipleChoiceQuiz");
-        viewManagerModel.firePropertyChange();
-    }
-
-    // Add method to start quiz from a deck
-    public void startQuizForDeck(Deck deck) {
-        // Remove old quiz if exists
-        if (multipleChoiceQuizView != null) {
-            cardPanel.remove(multipleChoiceQuizView);
-        }
-
-        // Create new quiz for this deck
-        addMultipleChoiceQuizUseCaseForDeck(deck);
 
         // Navigate to quiz
         viewManagerModel.setState("MultipleChoiceQuiz");
         viewManagerModel.firePropertyChange();
     }
+
+    // Retake a quiz (given a list of questions, e.g., incorrect ones)
+    public void createRetakeQuiz(List<MultipleChoiceQuestion> questions) {
+        if (currentDeck != null) {
+            currentDeck.markQuizTaken();
+        }
+
+        // Remove old quiz view
+        if (multipleChoiceQuizView != null) {
+            cardPanel.remove(multipleChoiceQuizView);
+        }
+
+        // Reset the view model
+        multipleChoiceQuizViewModel = new MultipleChoiceQuizViewModel();
+        MultipleChoiceQuizOutputBoundary outputBoundary =
+                new MultipleChoiceQuizPresenter(multipleChoiceQuizViewModel);
+        MultipleChoiceQuizDataAccessInterface quizDataAccess = new MultipleChoiceQuizDataAccessObject(allDecks);
+
+        multipleChoiceQuizInteractor =
+                new MultipleChoiceQuizInteractor(currentDeck, quizDataAccess, outputBoundary);
+
+        multipleChoiceQuizController =
+                new MultipleChoiceQuizController(multipleChoiceQuizInteractor);
+
+        multipleChoiceQuizView = new MultipleChoiceQuizView(
+                multipleChoiceQuizController,
+                multipleChoiceQuizViewModel,
+                viewManagerModel,
+                this
+        );
+
+        cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
+
+        // Start the quiz again
+        multipleChoiceQuizController.startRetakeQuiz(questions);
+        multipleChoiceQuizView.refreshView();
+
+        cardPanel.revalidate();
+        cardPanel.repaint();
+
+        viewManagerModel.setState("MultipleChoiceQuiz");
+        viewManagerModel.firePropertyChange();
+    }
+
 
     public List<MultipleChoiceQuestion> getOriginalQuestions() {
         return new ArrayList<>(originalQuestions);

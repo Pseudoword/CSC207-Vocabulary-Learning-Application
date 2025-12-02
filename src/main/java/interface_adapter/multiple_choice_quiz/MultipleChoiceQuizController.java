@@ -8,15 +8,19 @@ import use_case.multiple_choice_quiz.MultipleChoiceQuizInteractor;
 import java.util.List;
 
 public class MultipleChoiceQuizController {
-    private final MultipleChoiceQuizInputBoundary interactor;
+    private final MultipleChoiceQuizInteractor interactor;
 
-    public MultipleChoiceQuizController(MultipleChoiceQuizInputBoundary interactor) {
+    public MultipleChoiceQuizController(MultipleChoiceQuizInteractor interactor) {
         this.interactor = interactor;
     }
 
     public void startQuiz(String deckId) {
         MultipleChoiceQuizInputData inputData = new MultipleChoiceQuizInputData(deckId);
         interactor.execute(inputData);
+    }
+
+    public void startRetakeQuiz(List<MultipleChoiceQuestion> questions) {
+        interactor.executeRetake(questions);
     }
 
     public void answerSelected(int selectedIndex) {

@@ -5,7 +5,7 @@ public class MultipleChoiceQuizInputData {
     public enum ActionType {
         START_QUIZ,
         SELECT_ANSWER,
-        NEXT_QUESTION
+        NEXT_QUESTION,
     }
 
     private final ActionType actionType;
