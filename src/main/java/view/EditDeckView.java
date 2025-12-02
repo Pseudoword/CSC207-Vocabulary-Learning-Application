@@ -1,6 +1,5 @@
 package view;
 
-import app.AppBuilder;
 import entity.Deck;
 import entity.Vocabulary;
 import interface_adapter.ViewManagerModel;
