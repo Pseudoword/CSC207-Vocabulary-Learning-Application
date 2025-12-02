@@ -189,8 +189,6 @@ public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInt
         return sb.toString();
     }
 
-    // ========== Interface Implementation ==========
-
     @Override
     public Deck getDeck(String deckTitle) {
         return decks.get(deckTitle);
@@ -215,27 +213,4 @@ public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInt
         return new ArrayList<>(decks.values());
     }
 
-    /**
-     * Delete a deck by title.
-     * @param deckTitle the title of the deck to delete
-     * @return true if deleted, false if not found
-     */
-    public boolean deleteDeck(String deckTitle) {
-        if (decks.remove(deckTitle) != null) {
-            save();
-            return true;
-        }
-        return false;
-    }
-    public String getCurrentUsername() {
-        return currentUsername;
-    }
-
-    /**
-     * Get the dictionary API for external use if needed.
-     * @return the dictionary API interface
-     */
-    public DictionaryAPIInterface getDictionaryAPI() {
-        return dictionaryAPI;
-    }
 }
