@@ -11,6 +11,4 @@ public interface StudyFlashCardsInputBoundary {
     void flag(StudyFlashCardsInputData inputData);
 
     void reveal(StudyFlashCardsInputData inputData);
-
-    void switchToReviewView();
 }

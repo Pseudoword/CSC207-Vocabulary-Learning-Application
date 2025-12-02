@@ -16,6 +16,7 @@ public class StudyFlashCardsPresenter implements StudyFlashCardsOutputBoundary {
     @Override
     public void prepareSuccessView(StudyFlashCardsOutputData outputData){
         final StudyFlashCardsState state = viewModel.getState();
+
         state.setDisplayText(outputData.getDisplayText());
         state.setWord(outputData.getWord());
         state.setDefn(outputData.getDefn());

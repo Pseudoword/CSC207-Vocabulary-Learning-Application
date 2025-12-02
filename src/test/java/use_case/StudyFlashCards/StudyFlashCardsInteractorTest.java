@@ -81,7 +81,7 @@ class StudyFlashCardsInteractorTest {
 
         interactor.execute(emptyInput);
 
-        assertEquals("Deck is empty.", presenter.lastFailure);
+        assertEquals("noWords", presenter.lastFailure);
         assertNull(presenter.lastSuccess);
     }
 

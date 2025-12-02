@@ -1,11 +1,9 @@
 package view;
 
-import entity.Deck;
 import interface_adapter.StudyFlashCards.StudyFlashCardsController;
 import interface_adapter.StudyFlashCards.StudyFlashCardsState;
 import interface_adapter.StudyFlashCards.StudyFlashCardsViewModel;
 import interface_adapter.ViewManagerModel;
-import use_case.StudyFlashCards.StudyFlashCardsInputData;
 
 import javax.swing.*;
 import java.awt.*;
