@@ -37,6 +37,6 @@ public class Vocabulary {
 
     public void setFlagged(Boolean flagged) {this.flagged = flagged;}
 
-    public Boolean getFlagged() {return flagged;}
+    public boolean getFlagged() {return flagged;}
 
 }
