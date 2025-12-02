@@ -35,7 +35,7 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
     private final String deckName;
 
 
-    public StudyFlashCardsView(StudyFlashCardsViewModel viewModel, StudyFlashCardsController controller, ViewManagerModel viewManagerModel, String deckName) {//StudyFlashCardsViewModel viewModel, StudyFlashCardController controller// is allowed here
+    public StudyFlashCardsView(StudyFlashCardsViewModel viewModel, StudyFlashCardsController controller, ViewManagerModel viewManagerModel, String deckName) {
         this.viewModel = viewModel;
         this.controller = controller;
         this.viewManagerModel = viewManagerModel;
