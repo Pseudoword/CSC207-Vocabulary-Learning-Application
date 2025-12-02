@@ -3,9 +3,11 @@ package view;
 import interface_adapter.StudyFlashCards.StudyFlashCardsController;
 import app.AppBuilder;
 import entity.Deck;
-import entity.Vocabulary;
 import interface_adapter.ViewManagerModel;
 import use_case.StudyFlashCards.StudyFlashCardsInputData;
+
+import interface_adapter.update_deck_details.UpdateDeckDetailsState;
+import interface_adapter.update_deck_details.UpdateDeckDetailsViewModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,12 +26,15 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
     private final JButton takeQuizButton;
     private final JButton backButton;
     private final ViewManagerModel viewManagerModel;
+    private final UpdateDeckDetailsViewModel updateDeckDetailsViewModel;
     private final AppBuilder appBuilder;
 
-    public DecksView(ViewManagerModel viewManagerModel, AppBuilder appBuilder) {
+    public DecksView(ViewManagerModel viewManagerModel, AppBuilder appBuilder,
+                     UpdateDeckDetailsViewModel updateDeckDetailsViewModel) {
         this.viewManagerModel = viewManagerModel;
         this.appBuilder = appBuilder;
         this.viewManagerModel.addPropertyChangeListener(this);
+        this.updateDeckDetailsViewModel = updateDeckDetailsViewModel;
 
         this.setPreferredSize(new Dimension(900, 700));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -134,7 +139,6 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
     @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
 
         if (src == studyAllButton) {
             Deck selectedDeck = deckList.getSelectedValue();
@@ -154,11 +158,16 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
                         "Quiz Unavailable",
                         JOptionPane.WARNING_MESSAGE);
             } else {
-                // Start quiz for the selected deck
-                appBuilder.startQuizForDeck(selectedDeck);
+                viewManagerModel.setState("logged in");
+                viewManagerModel.firePropertyChange();
             }
         } else if (src == editButton) {
-            JOptionPane.showMessageDialog(this, "Use Case 4 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
+            Deck selectedDeck = deckList.getSelectedValue();
+            if (selectedDeck == null){
+                JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
+            } else {
+                appBuilder.showEditDeckView(selectedDeck);
+            }
         } else if (src == backButton) {
             viewManagerModel.setState("logged in");
             viewManagerModel.firePropertyChange();

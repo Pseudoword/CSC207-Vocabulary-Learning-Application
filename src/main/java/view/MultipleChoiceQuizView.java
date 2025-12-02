@@ -150,7 +150,6 @@ public class MultipleChoiceQuizView extends JPanel {
         decksButton.addActionListener(e -> {
             if (appBuilder != null) {
                 appBuilder.markCurrentDeckAsTaken();
-                appBuilder.refreshDecksView();
             }
             viewManagerModel.setState("decks");
             viewManagerModel.firePropertyChange();
