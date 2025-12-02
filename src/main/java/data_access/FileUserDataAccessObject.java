@@ -21,8 +21,7 @@ import java.util.Map;
 public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
-        LogoutUserDataAccessInterface,
-        StudyFlashCardsDataAccessInterface {
+        LogoutUserDataAccessInterface{
 
     private static final String HEADER = "username,password";
 
@@ -125,45 +124,5 @@ public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         // Replace the User object in the map
         accounts.put(user.getName(), user);
         save();
-    }
-
-    @Override
-    public Deck getDeck(String deckName) {
-        //temp
-        Deck testDeck = new Deck("Temporary Test Deck", "description");
-        Vocabulary vocab1 = new Vocabulary("word1", "defn1", false);
-        Vocabulary vocab2 = new Vocabulary("word2", "defn2", false);
-        Vocabulary vocab3 = new Vocabulary("word3", "defn3", false);
-        Vocabulary vocab4 = new Vocabulary("word4", "defn4", false);
-        Vocabulary vocab5 = new Vocabulary("word5", "defn5", false);
-        Vocabulary vocab6 = new Vocabulary("word6", "defn6", false);
-        testDeck.addWord(vocab1);
-        testDeck.addWord(vocab2);
-        testDeck.addWord(vocab3);
-        testDeck.addWord(vocab4);
-        testDeck.addWord(vocab5);
-        testDeck.addWord(vocab6);
-
-        Deck deck1 = new Deck("Deck 1", "Sample deck 1");
-        deck1.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
-        deck1.addWord(new Vocabulary("dog", "A common domesticated animal", false));
-        deck1.addWord(new Vocabulary("red", "The color of fire and blood", false));
-        deck1.addWord(new Vocabulary("cat", "A small domesticated feline", false));
-        deck1.addWord(new Vocabulary("house", "A building for human habitation", false));
-
-        Deck deck2 = new Deck("Deck 2", "Sample deck 2");
-        deck2.addWord(new Vocabulary("red", "The color of fire and blood", false));
-        deck2.addWord(new Vocabulary("cat", "A small domesticated feline", false));
-
-        Deck deck3 = new Deck("Deck 3", "Sample deck 3");
-        deck3.addWord(new Vocabulary("house", "A building for human habitation", false));
-        if (deckName == "testDeck") {return testDeck;}
-        else if (deckName == "Deck 1") {
-            return deck1;
-        } else if (deckName == "Deck 2") {
-            return deck2;
-        } else if (deckName == "Deck 3") {
-            return deck3;
-        } else {return null;}
     }
 }

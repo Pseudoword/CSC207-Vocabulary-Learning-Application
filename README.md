@@ -55,13 +55,10 @@ A desktop application to help users expand and reinforce vocabulary with flashca
 
 * User selects “deck” → “study all”.
 
-  * User is sent to Use Case 4.
-* User selects “deck” → “review”.
-
   * User is sent to Use Case 5.
 * User selects “deck” → “edit”.
 
-  * User is sent to Use Case 3.
+  * User is sent to Use Case 4.
 * User selects “take quiz”.
 
   * User is sent to Use Case 6.
@@ -122,42 +119,19 @@ A desktop application to help users expand and reinforce vocabulary with flashca
 
 * System displays word.
 * User finds word difficult.
-* User flags word by selecting “Add to Review”.
+* User marks the word by selecting “Flag”.
 * Next word is displayed.
 
 **Alternative flow (empty deck)**
 
 * There are no cards in the deck.
 * User is taken to “edit decks” view for the deck.
-* System displays “no cards found, add new cards”.
+* System displays “no cards found” user is given the option to return to main menu.
 
 ---
 
-### Use Case 6: Study From Flagged List (Review)
 
-**Main flow**
-
-* System displays flagged words.
-* User is comfortable with definition.
-* User selects “Remove from Review”.
-* Next word is displayed.
-
-**Alternative flow (still difficult)**
-
-* System displays flagged word.
-* User still finds word difficult.
-* User selects “Next word”.
-* Next word is displayed.
-
-**Alternative flow (no flagged cards)**
-
-* There are no flagged cards for the deck.
-* User is taken to “study all” view.
-* System displays “no flagged cards found, study all instead”.
-
----
-
-### Use Case 7: Taking Multiple-Choice Quiz
+### Use Case 6: Taking Multiple-Choice Quiz
 
 **Main flow**
 
@@ -176,7 +150,7 @@ A desktop application to help users expand and reinforce vocabulary with flashca
 
 ---
 
-### Use Case 8: Mastering Decks
+### Use Case 7: Mastering Decks
 
 **Main flow**
 
@@ -195,15 +169,14 @@ A desktop application to help users expand and reinforce vocabulary with flashca
 ## MVP
 
 | Use Case                    | User Story | Lead        |
-| --------------------------- | ---------- | ----------- |
+| --------------------------- |------------| ----------- |
 | Log in / Sign up            | 1          | Jiamei      |
 | Navigating main menu        | 2          | Jiamei      |
 | Create Deck                 | 3          | Nerissa     |
 | Edit Deck                   | 4          | Jinuo       |
 | Study Flash Cards           | 5          | Kaiyang     |
-| Review Flash Cards          | 6          | Kaiyang     |
-| Taking Multiple-choice Quiz | 7          | Lan         |
-| Mastering Decks             | 8          | Lan/Nerissa |
+| Taking Multiple-choice Quiz | 6          | Lan         |
+| Mastering Decks             | 7          | Lan/Nerissa |
 
 ---
 

@@ -22,7 +22,6 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
     private final JList<Deck> deckList;
     private final DefaultListModel<Deck> listModel;
     private final JButton studyAllButton;
-    private final JButton reviewButton;
     private final JButton editButton;
     private final JButton takeQuizButton;
     private final JButton backButton;
@@ -63,12 +62,11 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
         Font buttonFont = new Font("Arial", Font.PLAIN, 16);
 
         studyAllButton = createPinkButton("Study All", buttonSize, buttonFont);
-        reviewButton = createPinkButton("Review", buttonSize, buttonFont);
         takeQuizButton = createPinkButton("Take Quiz", buttonSize, buttonFont);
         editButton = createPinkButton("Edit", buttonSize, buttonFont);
         backButton = createPinkButton("Back", buttonSize, buttonFont);
 
-        JButton[] buttons = {studyAllButton, reviewButton, takeQuizButton, editButton, backButton};
+        JButton[] buttons = {studyAllButton, takeQuizButton, editButton, backButton};
         for (JButton b : buttons) {
             b.setPreferredSize(buttonSize);
             b.setMaximumSize(buttonSize);
@@ -86,7 +84,6 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
         JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 10));
         buttonRow.setBackground(new Color(255, 240, 245));
         buttonRow.add(studyAllButton);
-        buttonRow.add(reviewButton);
         buttonRow.add(takeQuizButton);
         this.add(buttonRow);
         this.add(Box.createVerticalStrut(20));
@@ -150,8 +147,6 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
             } else {
                 appBuilder.startStudyFlashCardsForDeck(selectedDeck);
             }
-        } else if (src == reviewButton) {
-            JOptionPane.showMessageDialog(this, "Use Case 6 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == takeQuizButton) {
             Deck selectedDeck = deckList.getSelectedValue();
             if (selectedDeck == null) {

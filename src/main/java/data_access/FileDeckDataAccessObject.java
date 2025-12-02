@@ -2,6 +2,7 @@ package data_access;
 
 import entity.Deck;
 import entity.Vocabulary;
+import use_case.StudyFlashCards.StudyFlashCardsDataAccessInterface;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckDataAccessInterface;
 import use_case.create_deck.CreateDeckDataAccessInterface;
 import use_case.update_deck_details.UpdateDeckDetailsDataAccessInterface;
@@ -15,8 +16,10 @@ import java.util.*;
  * deckTitle|description|word1:definition1:incorrect1;word2:definition2:incorrect2;...
  */
 public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInterface,
-                                                    CreateDeckDataAccessInterface,
-                                                    UpdateDeckDetailsDataAccessInterface {
+        CreateDeckDataAccessInterface,
+        StudyFlashCardsDataAccessInterface,
+        CreateDeckDataAccessInterface,
+        UpdateDeckDetailsDataAccessInterface {
 
     private static final String DELIMITER = "|";
     private static final String WORD_DELIMITER = ";";
