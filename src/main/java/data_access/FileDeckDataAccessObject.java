@@ -16,7 +16,6 @@ import java.util.*;
  * deckTitle|description|word1:definition1:incorrect1;word2:definition2:incorrect2;...
  */
 public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInterface,
-        CreateDeckDataAccessInterface,
         StudyFlashCardsDataAccessInterface,
         CreateDeckDataAccessInterface,
         UpdateDeckDetailsDataAccessInterface {
