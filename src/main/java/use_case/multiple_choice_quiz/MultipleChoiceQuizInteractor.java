@@ -1,5 +1,6 @@
 package use_case.multiple_choice_quiz;
 
+import entity.Deck;
 import entity.MultipleChoiceQuestion;
 
 import java.util.ArrayList;
@@ -7,18 +8,30 @@ import java.util.List;
 
 public class MultipleChoiceQuizInteractor implements MultipleChoiceQuizInputBoundary {
 
+    private final MultipleChoiceQuizDataAccessInterface quizDataAccess;
+    private final MultipleChoiceQuizOutputBoundary presenter;
+    private final Deck deck;
+
     private List<MultipleChoiceQuestion> questions;
     private final List<MultipleChoiceQuestion> incorrectQuestions;
-    private final MultipleChoiceQuizOutputBoundary presenter;
     private int currentIndex = 0;
     private int correctCount = 0;
 
-    public MultipleChoiceQuizInteractor(List<MultipleChoiceQuestion> questions,
-                                        MultipleChoiceQuizOutputBoundary presenter) {
-        this.questions = questions;
+
+    // New constructor takes a deck + DAO + presenter
+    public MultipleChoiceQuizInteractor(
+            Deck deck,
+            MultipleChoiceQuizDataAccessInterface quizDataAccess,
+            MultipleChoiceQuizOutputBoundary presenter) {
+
+        this.deck = deck;
+        this.quizDataAccess = quizDataAccess;
         this.presenter = presenter;
+
+        this.questions = quizDataAccess.getQuestionsForDeck(deck.getTitle());
         this.incorrectQuestions = new ArrayList<>();
     }
+
 
     @Override
     public void execute(MultipleChoiceQuizInputData inputData) {
@@ -36,14 +49,18 @@ public class MultipleChoiceQuizInteractor implements MultipleChoiceQuizInputBoun
     }
 
     private void handleStartQuiz() {
+        // Fetch questions from DAO when starting quiz
+        questions = quizDataAccess.getQuestionsForDeck(deck.getTitle());
+
+        currentIndex = 0;
+        correctCount = 0;
+        incorrectQuestions.clear();
         showCurrentQuestion();
     }
 
     private void handleSelectAnswer(int selectedIndex) {
         if (currentIndex >= questions.size()) {
-            MultipleChoiceQuizOutputData outputData =
-                    new MultipleChoiceQuizOutputData("No question available.");
-            presenter.prepareView(outputData);
+            presenter.prepareView(new MultipleChoiceQuizOutputData("No question available."));
             return;
         }
 
@@ -62,7 +79,6 @@ public class MultipleChoiceQuizInteractor implements MultipleChoiceQuizInputBoun
     private void handleNextQuestion() {
         currentIndex++;
         if (currentIndex >= questions.size()) {
-            // Quiz finished
             boolean hasMistakes = !incorrectQuestions.isEmpty();
             MultipleChoiceQuizOutputData outputData = new MultipleChoiceQuizOutputData(
                     hasMistakes,
@@ -71,16 +87,13 @@ public class MultipleChoiceQuizInteractor implements MultipleChoiceQuizInputBoun
             );
             presenter.prepareView(outputData);
         } else {
-            // Show next question
             showCurrentQuestion();
         }
     }
 
     private void showCurrentQuestion() {
         if (currentIndex >= questions.size()) {
-            MultipleChoiceQuizOutputData outputData =
-                    new MultipleChoiceQuizOutputData("No more questions available.");
-            presenter.prepareView(outputData);
+            presenter.prepareView(new MultipleChoiceQuizOutputData("No more questions available."));
             return;
         }
 
