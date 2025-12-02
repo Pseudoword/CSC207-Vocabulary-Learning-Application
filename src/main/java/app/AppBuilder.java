@@ -342,7 +342,7 @@ public class AppBuilder {
         cardPanel.add(multipleChoiceQuizView, multipleChoiceQuizView.getViewName());
 
         // Start the quiz again
-        multipleChoiceQuizController.startQuiz(currentDeck.getTitle());
+        multipleChoiceQuizController.startRetakeQuiz(questions);
         multipleChoiceQuizView.refreshView();
 
         cardPanel.revalidate();

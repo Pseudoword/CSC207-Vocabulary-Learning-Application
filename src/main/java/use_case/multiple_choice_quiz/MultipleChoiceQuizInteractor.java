@@ -48,6 +48,14 @@ public class MultipleChoiceQuizInteractor implements MultipleChoiceQuizInputBoun
         }
     }
 
+    public void executeRetake(List<MultipleChoiceQuestion> incorrectOnly) {
+        this.questions = new ArrayList<>(incorrectOnly);
+        currentIndex = 0;
+        incorrectQuestions.clear();
+        correctCount = 0;
+        showCurrentQuestion();
+    }
+
     private void handleStartQuiz() {
         // Fetch questions from DAO when starting quiz
         questions = quizDataAccess.getQuestionsForDeck(deck.getTitle());
