@@ -162,7 +162,7 @@ public class AppBuilder {
 
         studyFlashCardsViewModel = new StudyFlashCardsViewModel();
         final StudyFlashCardsOutputBoundary outputBoundary = new StudyFlashCardsPresenter(viewManagerModel, studyFlashCardsViewModel);
-        final StudyFlashCardsInputBoundary interactor = new StudyFlashCardsInteractor(userDataAccessObject, outputBoundary);
+        final StudyFlashCardsInputBoundary interactor = new StudyFlashCardsInteractor(dataAccessObject, outputBoundary);
         StudyFlashCardsController controller = new StudyFlashCardsController(interactor);
         studyFlashCardsView = new StudyFlashCardsView(studyFlashCardsViewModel, controller, viewManagerModel, deck.getTitle());
 

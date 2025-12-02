@@ -17,14 +17,13 @@ public class StudyFlashCardsInteractor implements StudyFlashCardsInputBoundary {
     }
 
     @Override
-    public void execute(StudyFlashCardsInputData inputData) { //first word when loaded
+    public void execute(StudyFlashCardsInputData inputData) {
         deck = dataAccessObject.getDeck(inputData.getDeckName());
-        if (deck == null || deck.isEmpty()) {
-            System.out.println("No deck found");
-            // shouldn't be empty can't create empty deck
-            outputBoundary.prepareFailureView("Deck is empty.");
-            return;
-        } else{
+        if (deck == null) {
+            outputBoundary.prepareFailureView("noDeck");
+        } else if (deck.isEmpty()) {
+            outputBoundary.prepareFailureView("noWords");
+        } else {
             this.index = 0;
             this.isWord = true;
             presentCard();
@@ -50,10 +49,9 @@ public class StudyFlashCardsInteractor implements StudyFlashCardsInputBoundary {
     }
 
     public void flag(StudyFlashCardsInputData inputData) {
-        isFlag = !isFlag;
         deck = dataAccessObject.getDeck(inputData.getDeckName());
         Vocabulary vocab = deck.getVocabularies().get(index);
-        vocab.setFlagged(isFlag);
+        vocab.setFlagged(!vocab.getFlagged());
         presentCard();
     }
 

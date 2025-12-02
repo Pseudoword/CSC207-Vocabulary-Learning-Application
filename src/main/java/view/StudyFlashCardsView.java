@@ -13,7 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-//import DecksView
+import java.util.Objects;
 
 public class StudyFlashCardsView extends JPanel implements ActionListener, PropertyChangeListener {
 
@@ -28,10 +28,9 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
     private JButton mainMenuButton;
     private final ViewManagerModel viewManagerModel;
 
-    private JLabel errorLabel;
-    private JLabel outputLabel;
-    private final int screenWidth = 900;
-    private final int screenHeight = 700;
+    private final JLabel noWordErrorLabel;
+    private final JLabel noDeckErrorLabel;
+    private final JLabel outputLabel;
     private final String deckName;
 
 
@@ -42,11 +41,12 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
         viewModel.addPropertyChangeListener(this);
         this.deckName = deckName;
 
+        int screenWidth = 900;
+        int screenHeight = 700;
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(new Color(255, 240, 245));
         this.setLayout(new BorderLayout(0, 20));
 
-        //other panels
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
         JPanel panel3 = new JPanel();
@@ -65,7 +65,6 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
         panel4.setPreferredSize(new Dimension(200, 200));
         panel5.setPreferredSize(new Dimension(200, 200));
 
-        //main panel
         panel5.setLayout(new FlowLayout());
         JLabel title = new JLabel("Study Flash Cards");
         title.setFont(new Font("Arial", Font.BOLD, 60));
@@ -107,16 +106,19 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
         mainMenuButton.setBackground(new Color(255, 105, 180));
         mainMenuButton.setForeground(Color.WHITE);
 
-        errorLabel = new JLabel("ERROR", SwingConstants.CENTER);
-        errorLabel.setFont(new Font("Arial", Font.BOLD, 40));
-        errorLabel.setVisible(false);
+        noWordErrorLabel = new JLabel("No Words in Deck", SwingConstants.CENTER);
+        noWordErrorLabel.setFont(new Font("Arial", Font.BOLD, 40));
+        noWordErrorLabel.setVisible(false);
 
+        noDeckErrorLabel = new JLabel("Error", SwingConstants.CENTER);
+        noDeckErrorLabel.setFont(new Font("Arial", Font.BOLD, 40));
+        noDeckErrorLabel.setVisible(false);
+        updateFlagButtonColor();
         addButtonHoverEffect(mainMenuButton, new Color(255, 105, 180));
         addButtonHoverEffect(defnButton, new Color(255, 105, 180));
         addButtonHoverEffect(nextButton, new Color(255, 105, 180));
         addButtonHoverEffect(prevButton, new Color(255, 105, 180));
         addButtonHoverEffect(flagButton, new Color(255, 105, 180));
-
         mainMenuButton.addActionListener(e -> {
             viewManagerModel.setState("logged in");
             viewManagerModel.firePropertyChange();
@@ -127,7 +129,8 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
         panel3.add(nextButton);
         panel2.add(prevButton);
         panel4.add(flagButton);
-        panel5.add(errorLabel);
+        panel5.add(noWordErrorLabel);
+        panel5.add(noDeckErrorLabel);
         panel4.add(mainMenuButton);
         this.add(panel1, BorderLayout.NORTH);
         this.add(panel2, BorderLayout.WEST);
@@ -136,10 +139,9 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
         this.add(panel5, BorderLayout.CENTER);
 
         outputLabel = new JLabel((""),  SwingConstants.CENTER);
-        outputLabel.setFont(new Font("Arial", Font.BOLD, 40));
+        outputLabel.setFont(new Font("Arial", Font.BOLD, 20));
         panel5.add(outputLabel);
         controller.execute(deckName);
-
     }
 
     private void addButtonHoverEffect(JButton button, Color originalColor) {
@@ -148,19 +150,22 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                if (button.isVisible() && button.isEnabled()) {
-                    button.setBackground(hoverColor);
-                    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                }
+                if (!button.isVisible() || !button.isEnabled()) {return;}
+
+                if (button == flagButton && viewModel.getFlag()) {return;}
+
+                button.setBackground(hoverColor);
+                button.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
+
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                if (button.isVisible() && button.isEnabled()) {
-                    button.setBackground(originalColor);
-                    button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                }
-            }
+                if (!button.isVisible() || !button.isEnabled()) {return;}
+                if (button == flagButton && viewModel.getFlag()) {return;}
+
+                button.setBackground(originalColor);
+                button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));}
         });
     }
 
@@ -171,16 +176,25 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
 
         } else if (source == nextButton) {
             controller.next(deckName);
+            updateFlagButtonColor();
 
         } else if (source == prevButton) {
             controller.prev(deckName);
+            updateFlagButtonColor();
 
         } else if (source == flagButton) {
             controller.flag(deckName);
-            System.out.println(viewModel.getFlag());
+            updateFlagButtonColor();
+
         }
     }
-
+    private void updateFlagButtonColor() {
+        if (viewModel.getFlag()) {
+            flagButton.setBackground(new Color(255, 0, 0));
+        } else {
+            flagButton.setBackground(new Color(255, 105, 180));
+        }
+    }
     public void setController(StudyFlashCardsController controller) {
         this.controller = controller;
     }
@@ -189,16 +203,25 @@ public class StudyFlashCardsView extends JPanel implements ActionListener, Prope
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
             StudyFlashCardsState state = viewModel.getState();
-            if (state.getError() != null) {
+            if (Objects.equals(state.getError(), "noWords")) {
                 nextButton.setVisible(false);
                 prevButton.setVisible(false);
                 flagButton.setVisible(false);
                 defnButton.setVisible(false);
-                errorLabel.setVisible(true);
+                noWordErrorLabel.setVisible(true);
+                noDeckErrorLabel.setVisible(false);
+            }else if (Objects.equals(state.getError(), "noDeck")) {
+                nextButton.setVisible(false);
+                prevButton.setVisible(false);
+                flagButton.setVisible(false);
+                defnButton.setVisible(false);
+                noDeckErrorLabel.setVisible(true);
+                noWordErrorLabel.setVisible(false);
             }else {
                 outputLabel.setText(state.getDisplayText());
                 revalidate();
                 repaint();
+                updateFlagButtonColor();
             }
         }
     }
