@@ -198,7 +198,6 @@ A desktop application to help users expand and reinforce vocabulary with flashca
 * **API Name:** Merriam-Webster’s Learner’s Dictionary with Audio
 * **Link:** [https://dictionaryapi.com/products/api-learners-dictionary](https://dictionaryapi.com/products/api-learners-dictionary)
 * **Main service:** Provides words with related definitions and other dictionary features.
-* **Status:** None
 
 ---
 
