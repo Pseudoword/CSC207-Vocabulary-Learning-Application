@@ -21,7 +21,7 @@ import java.util.Map;
 public class FileUserDataAccessObject implements SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         ChangePasswordUserDataAccessInterface,
-        LogoutUserDataAccessInterface,//{//,
+        LogoutUserDataAccessInterface,
         StudyFlashCardsDataAccessInterface {
 
     private static final String HEADER = "username,password";
