@@ -129,7 +129,6 @@ public class DecksView extends JPanel implements ActionListener {
 
         if (src == studyAllButton) {
             Deck selectedDeck = deckList.getSelectedValue();
-            System.out.println(selectedDeck.getTitle());
             if (selectedDeck == null) {
                 JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
             } else {
