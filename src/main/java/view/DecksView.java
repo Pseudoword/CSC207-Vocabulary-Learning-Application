@@ -45,7 +45,7 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
         refreshDecks();
 
         deckList = new JList<>(listModel);
-        deckList.setCellRenderer(new DeckListCellRenderer());
+        deckList.setCellRenderer(new DeckListCellRenderer()); 
         deckList.setFixedCellHeight(30);
         deckList.setVisibleRowCount(5);
         deckList.setSelectionBackground(new Color(255, 240, 245));
@@ -152,6 +152,12 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
             Deck selectedDeck = deckList.getSelectedValue();
             if (selectedDeck == null) {
                 JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
+            } else if (selectedDeck.getVocabularies().size() < 4) {
+                System.out.println(selectedDeck.getVocabularies());
+                JOptionPane.showMessageDialog(this,
+                        "Not enough vocabulary for quiz",
+                        "Quiz Unavailable",
+                        JOptionPane.WARNING_MESSAGE);
             } else {
                 // Start quiz for the selected deck
                 appBuilder.startQuizForDeck(selectedDeck);

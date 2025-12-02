@@ -58,6 +58,9 @@ public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInt
         Deck deck1 = new Deck("Deck 1", "Sample deck 1");
         deck1.addWord(new Vocabulary("apple", "A fruit that is typically red or green", false));
         deck1.addWord(new Vocabulary("dog", "A common domesticated animal", false));
+        deck1.addWord(new Vocabulary("red", "The color of fire and blood", false));
+        deck1.addWord(new Vocabulary("cat", "A small domesticated feline", false));
+        deck1.addWord(new Vocabulary("house", "A building for human habitation", false));
         decks.put(deck1.getTitle(), deck1);
 
         Deck deck2 = new Deck("Deck 2", "Sample deck 2");
