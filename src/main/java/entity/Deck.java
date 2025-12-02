@@ -1,6 +1,7 @@
 package entity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Deck {
 
@@ -55,5 +56,14 @@ public class Deck {
 
     public void removeWord(Vocabulary word) {
         vocabularies.remove(word);
+    }
+
+    public boolean containsWord(String word) {
+        for (Vocabulary v: vocabularies) {
+            if (Objects.equals(v.getWord(), word)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
