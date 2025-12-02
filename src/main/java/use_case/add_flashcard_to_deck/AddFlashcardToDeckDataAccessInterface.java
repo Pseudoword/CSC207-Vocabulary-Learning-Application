@@ -20,10 +20,4 @@ public interface AddFlashcardToDeckDataAccessInterface {
      */
     void save(Deck deck);
 
-    /**
-     * Fetches the definition of a word from an external dictionary source.
-     * @param word the word to define
-     * @return the definition as a String, or null if the word is not found
-     */
-    String fetchDefinition(String word);
 }

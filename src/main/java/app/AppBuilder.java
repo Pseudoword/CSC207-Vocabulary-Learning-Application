@@ -79,8 +79,11 @@ public class AppBuilder {
     // DAO version using local file storage
     final FileUserDataAccessObject userDataAccessObject = new FileUserDataAccessObject("users.csv", userFactory);
 
-    // DAO version using file-based storage for persistence
-    private final FileDeckDataAccessObject dataAccessObject = new FileDeckDataAccessObject();
+    // API for dictionary lookups (separate responsibility)
+    private final DictionaryAPIDataAccess dictionaryAPI = new DictionaryAPIDataAccess();
+
+    // DAO version using file-based storage for deck persistence (inject API dependency)
+    private final FileDeckDataAccessObject dataAccessObject = new FileDeckDataAccessObject(dictionaryAPI);
 
     private SignupView signupView;
     private SignupViewModel signupViewModel;
@@ -376,6 +379,7 @@ public class AppBuilder {
 
         final AddFlashcardToDeckInputBoundary interactor = new AddFlashcardToDeckInteractor(
                 dataAccessObject,
+                dictionaryAPI,
                 outputBoundary
         );
 

@@ -27,11 +27,6 @@ public class InMemoryAddFlashcardDataAccess implements AddFlashcardToDeckDataAcc
     @Override
     public boolean existsByTitle(String deckTitle) { return decks.containsKey(deckTitle); }
 
-    @Override
-    public String fetchDefinition(String word) {
-        return dictionary.get(word);
-    }
-
     // Helper methods to set up test data
     public void addDeck(Deck deck) {
         decks.put(deck.getTitle(), deck);

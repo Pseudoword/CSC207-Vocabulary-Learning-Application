@@ -3,6 +3,7 @@ package data_access;
 import entity.Deck;
 import entity.Vocabulary;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckDataAccessInterface;
+import use_case.add_flashcard_to_deck.DictionaryAPIInterface;
 import use_case.create_deck.CreateDeckDataAccessInterface;
 
 import java.io.*;
@@ -22,11 +23,11 @@ public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInt
 
     private File csvFile;
     private final Map<String, Deck> decks = new LinkedHashMap<>();
-    private final DictionaryAPIDataAccess apiDataAccess;
+    private final DictionaryAPIInterface dictionaryAPI;
     private String currentUsername;
 
-    public FileDeckDataAccessObject() {
-        this.apiDataAccess = new DictionaryAPIDataAccess();
+    public FileDeckDataAccessObject(DictionaryAPIInterface dictionaryAPI) {
+        this.dictionaryAPI = dictionaryAPI;
 
     }
 
@@ -206,11 +207,6 @@ public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInt
         return decks.containsKey(deckTitle);
     }
 
-    @Override
-    public String fetchDefinition(String word) {
-        return apiDataAccess.fetchDefinition(word);
-    }
-
     /**
      * Get all decks.
      * @return list of all decks
@@ -233,5 +229,13 @@ public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInt
     }
     public String getCurrentUsername() {
         return currentUsername;
+    }
+
+    /**
+     * Get the dictionary API for external use if needed.
+     * @return the dictionary API interface
+     */
+    public DictionaryAPIInterface getDictionaryAPI() {
+        return dictionaryAPI;
     }
 }
