@@ -27,7 +27,7 @@ public class MultipleChoiceQuizPresenter implements MultipleChoiceQuizOutputBoun
                 break;
 
             case ERROR_VIEW:
-                System.err.println("Quiz error: " + outputData.getErrorMessage());
+                System.err.println(" ");
                 break;
         }
     }
