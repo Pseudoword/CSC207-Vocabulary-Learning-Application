@@ -240,20 +240,6 @@ public class AppBuilder {
         viewManagerModel.firePropertyChange();
     }
 
-//    public void showEditDeckView(Deck deck) {
-//        if (editDeckView != null) {
-//            cardPanel.remove(editDeckView);
-//        }
-//
-//        editDeckView = new EditDeckView(viewManagerModel, deck, updateDeckDetailsViewModel);
-//        cardPanel.add(editDeckView, editDeckView.getViewName());
-//        cardPanel.revalidate();
-//        cardPanel.repaint();
-//
-//        viewManagerModel.setState(editDeckView.getViewName());
-//        viewManagerModel.firePropertyChange();
-//    }
-
     public AppBuilder addMultipleChoiceQuizUseCaseForDeck(Deck deck) {
         this.currentDeck = deck;
 
