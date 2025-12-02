@@ -1,0 +1,160 @@
+package view;
+
+import app.AppBuilder;
+import entity.Deck;
+import entity.Vocabulary;
+import interface_adapter.ViewManagerModel;
+import interface_adapter.update_deck_details.UpdateDeckDetailsState;
+import interface_adapter.update_deck_details.UpdateDeckDetailsViewModel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class EditDeckView extends JPanel implements ActionListener {
+
+    private final String viewName = "edit deck";
+    private final JList<Vocabulary> flashcardList;
+    private final JButton editDeckDetailsButton;
+    private final JButton addFlashcardButton;
+    private final JButton deleteFlashcardButton;
+    private final JButton backButton;
+    private final ViewManagerModel viewManagerModel;
+    private final UpdateDeckDetailsViewModel updateDeckDetailsViewModel;
+    private final Deck targetDeck;
+
+    public EditDeckView(ViewManagerModel viewManagerModel, Deck targetDeck,
+                        UpdateDeckDetailsViewModel updateDeckDetailsViewModel) {
+        this.viewManagerModel = viewManagerModel;
+        this.targetDeck = targetDeck;
+        this.updateDeckDetailsViewModel = updateDeckDetailsViewModel;
+
+        this.setPreferredSize(new Dimension(900, 700));
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setBackground(new Color(255, 240, 245));
+
+        JLabel title = new JLabel("Flashcards");
+        title.setFont(new Font("Arial", Font.BOLD, 28));
+        title.setForeground(new Color(199, 21, 133));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        DefaultListModel<Vocabulary> listModel = new DefaultListModel<>();
+        for (Vocabulary v : targetDeck.getVocabularies()) {
+            listModel.addElement(v);
+        }
+
+        flashcardList = new JList<>(listModel);
+        flashcardList.setCellRenderer(new FlashcardListCellRenderer());
+        flashcardList.setFixedCellHeight(30);
+        flashcardList.setVisibleRowCount(5);
+        flashcardList.setSelectionBackground(new Color(255, 240, 245));
+        flashcardList.setSelectionForeground(new Color(255, 105, 180));
+        JScrollPane scrollPane = new JScrollPane(flashcardList);
+        scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        scrollPane.setPreferredSize(new Dimension(300, 300));
+
+        Dimension largeButtonSize = new Dimension(300, 40);
+        Dimension smallButtonSize = new Dimension(150, 40);
+        Font buttonFont = new Font("Arial", Font.PLAIN, 16);
+
+        editDeckDetailsButton = createPinkButton("Edit Deck Details", largeButtonSize, buttonFont);
+        addFlashcardButton = createPinkButton("Add Flashcards", largeButtonSize, buttonFont);
+        deleteFlashcardButton = createPinkButton("Delete Selected", largeButtonSize, buttonFont);
+        backButton = createPinkButton("Back", smallButtonSize, buttonFont);
+
+        JButton[] buttons = {addFlashcardButton, deleteFlashcardButton, editDeckDetailsButton, backButton};
+        for (JButton b : buttons) {
+            if (b == backButton) {
+                b.setPreferredSize(smallButtonSize);
+                b.setMaximumSize(smallButtonSize);
+            } else {
+                b.setPreferredSize(largeButtonSize);
+                b.setMaximumSize(largeButtonSize);
+            }
+            b.setAlignmentX(Component.CENTER_ALIGNMENT);
+            b.setFont(buttonFont);
+            b.addActionListener(this);
+        }
+
+        this.add(Box.createVerticalStrut(30));
+        this.add(title);
+        this.add(Box.createVerticalStrut(20));
+        this.add(scrollPane);
+        this.add(Box.createVerticalStrut(20));
+
+        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 10));
+        buttonRow.setBackground(new Color(255, 240, 245));
+        buttonRow.add(addFlashcardButton);
+        buttonRow.add(deleteFlashcardButton);
+        this.add(buttonRow);
+        this.add(editDeckDetailsButton);
+        this.add(Box.createVerticalStrut(50));
+        this.add(backButton);
+        this.add(Box.createVerticalGlue());
+    }
+
+    private JButton createPinkButton(String text, Dimension size, Font font) {
+        JButton button = new JButton(text);
+        button.setPreferredSize(size);
+        button.setMaximumSize(size);
+        button.setFont(font);
+        button.setBackground(new Color(255, 105, 180));
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setOpaque(true);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(199, 21, 133), 1),
+                BorderFactory.createEmptyBorder(8, 15, 8, 15)
+        ));
+
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(219, 112, 147));
+                button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(255, 105, 180));
+                button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        });
+
+        return button;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object src = e.getSource();
+
+        if (src == editDeckDetailsButton) {
+            UpdateDeckDetailsState state = updateDeckDetailsViewModel.getState();
+
+            state.setOriginalDeckTitle(targetDeck.getTitle());
+            state.setDeckTitle(targetDeck.getTitle());
+            state.setDeckDescription(targetDeck.getDescription());
+
+            updateDeckDetailsViewModel.setState(state);
+            updateDeckDetailsViewModel.firePropertyChange();
+
+            viewManagerModel.setState("update deck details");
+            viewManagerModel.firePropertyChange();
+        } else if (src == backButton) {
+            viewManagerModel.setState("decks");
+            viewManagerModel.firePropertyChange();
+        } else if (src == addFlashcardButton) {
+            JOptionPane.showMessageDialog(this, "Add Flashcard not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
+        } else if (src == deleteFlashcardButton) {
+            JOptionPane.showMessageDialog(this, "Delete Flashcard not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    public String getViewName() {
+        return viewName;
+    }
+}
