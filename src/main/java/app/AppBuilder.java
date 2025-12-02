@@ -13,6 +13,9 @@ import interface_adapter.StudyFlashCards.StudyFlashCardsController;
 import interface_adapter.StudyFlashCards.StudyFlashCardsPresenter;
 import interface_adapter.StudyFlashCards.StudyFlashCardsViewModel;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.delete_flashcard_in_deck.DeleteFlashcardFromDeckController;
+import interface_adapter.delete_flashcard_in_deck.DeleteFlashcardFromDeckPresenter;
+import interface_adapter.delete_flashcard_in_deck.DeleteFlashcardFromDeckViewModel;
 import interface_adapter.logged_in.ChangePasswordController;
 import interface_adapter.logged_in.ChangePasswordPresenter;
 import interface_adapter.logged_in.LoggedInState;
@@ -41,6 +44,10 @@ import interface_adapter.update_deck_details.UpdateDeckDetailsViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
+import use_case.delete_flashcard_from_deck.DeleteFlashcardFromDeckInputBoundary;
+import use_case.delete_flashcard_from_deck.DeleteFlashcardFromDeckInteractor;
+import use_case.delete_flashcard_from_deck.DeleteFlashcardFromDeckOutputBoundary;
+import use_case.delete_flashcard_from_deck.DeleteFlashcardFromDeckOutputData;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -119,6 +126,7 @@ public class AppBuilder {
     private Deck currentDeck;
     private List<Deck> allDecks;
     private UpdateDeckDetailsViewModel updateDeckDetailsViewModel = new UpdateDeckDetailsViewModel();
+    private DeleteFlashcardFromDeckViewModel deleteFlashcardFromDeckViewModel = new DeleteFlashcardFromDeckViewModel();
     private UpdateDeckDetailsView updateDeckDetailsView;
     private EditDeckView editDeckView;
     private MultipleChoiceQuizDataAccessInterface multipleChoiceQuizDataAccess;
@@ -204,7 +212,10 @@ public class AppBuilder {
             cardPanel.remove(editDeckView);
         }
 
-        editDeckView = new EditDeckView(viewManagerModel, deck, updateDeckDetailsViewModel);
+        editDeckView = new EditDeckView(viewManagerModel, deck, updateDeckDetailsViewModel,
+                deleteFlashcardFromDeckViewModel);
+        this.addDeleteFlashcardFromDeckUseCase();
+
         cardPanel.add(editDeckView, editDeckView.getViewName());
         cardPanel.revalidate();
         cardPanel.repaint();
@@ -237,20 +248,6 @@ public class AppBuilder {
         addStudyFlashCardsUseCaseForDeck(deck);
 
         viewManagerModel.setState("StudyFlashCards");
-        viewManagerModel.firePropertyChange();
-    }
-
-    public void showEditDeckView(Deck deck) {
-        if (editDeckView != null) {
-            cardPanel.remove(editDeckView);
-        }
-
-        editDeckView = new EditDeckView(viewManagerModel, deck, updateDeckDetailsViewModel);
-        cardPanel.add(editDeckView, editDeckView.getViewName());
-        cardPanel.revalidate();
-        cardPanel.repaint();
-
-        viewManagerModel.setState(editDeckView.getViewName());
         viewManagerModel.firePropertyChange();
     }
 
@@ -516,6 +513,18 @@ public class AppBuilder {
 
         final UpdateDeckDetailsController controller = new UpdateDeckDetailsController(interactor);
         updateDeckDetailsView.setController(controller);
+        return this;
+    }
+
+    public AppBuilder addDeleteFlashcardFromDeckUseCase() {
+        final DeleteFlashcardFromDeckOutputBoundary outputBoundary =
+                new DeleteFlashcardFromDeckPresenter(viewManagerModel, deleteFlashcardFromDeckViewModel);
+
+        final DeleteFlashcardFromDeckInputBoundary interactor =
+                new DeleteFlashcardFromDeckInteractor(dataAccessObject, outputBoundary);
+
+        final DeleteFlashcardFromDeckController controller = new DeleteFlashcardFromDeckController(interactor);
+        editDeckView.setDeleteFlashcardController(controller);
         return this;
     }
 

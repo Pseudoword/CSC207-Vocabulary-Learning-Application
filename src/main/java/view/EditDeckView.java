@@ -2,18 +2,24 @@ package view;
 
 import entity.Deck;
 import entity.Vocabulary;
+
 import interface_adapter.ViewManagerModel;
 import interface_adapter.update_deck_details.UpdateDeckDetailsState;
 import interface_adapter.update_deck_details.UpdateDeckDetailsViewModel;
-
+import interface_adapter.delete_flashcard_in_deck.DeleteFlashcardFromDeckController;
+import interface_adapter.delete_flashcard_in_deck.DeleteFlashcardFromDeckState;
+import interface_adapter.delete_flashcard_in_deck.DeleteFlashcardFromDeckViewModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-public class EditDeckView extends JPanel implements ActionListener {
+public class EditDeckView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private final String viewName = "edit deck";
+    private final DefaultListModel<Vocabulary> flashcardListModel;
     private final JList<Vocabulary> flashcardList;
     private final JButton editDeckDetailsButton;
     private final JButton addFlashcardButton;
@@ -21,13 +27,19 @@ public class EditDeckView extends JPanel implements ActionListener {
     private final JButton backButton;
     private final ViewManagerModel viewManagerModel;
     private final UpdateDeckDetailsViewModel updateDeckDetailsViewModel;
+    private final DeleteFlashcardFromDeckViewModel deleteFlashcardFromDeckViewModel;
+    private DeleteFlashcardFromDeckController deleteFlashcardFromDeckController = null;
     private final Deck targetDeck;
 
     public EditDeckView(ViewManagerModel viewManagerModel, Deck targetDeck,
-                        UpdateDeckDetailsViewModel updateDeckDetailsViewModel) {
+                        UpdateDeckDetailsViewModel updateDeckDetailsViewModel,
+                        DeleteFlashcardFromDeckViewModel deleteFlashcardFromDeckViewModel) {
+
         this.viewManagerModel = viewManagerModel;
         this.targetDeck = targetDeck;
         this.updateDeckDetailsViewModel = updateDeckDetailsViewModel;
+        this.deleteFlashcardFromDeckViewModel = deleteFlashcardFromDeckViewModel;
+        this.deleteFlashcardFromDeckViewModel.addPropertyChangeListener(this);
 
         this.setPreferredSize(new Dimension(900, 700));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -38,12 +50,12 @@ public class EditDeckView extends JPanel implements ActionListener {
         title.setForeground(new Color(199, 21, 133));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        DefaultListModel<Vocabulary> listModel = new DefaultListModel<>();
+        flashcardListModel = new DefaultListModel<>();
         for (Vocabulary v : targetDeck.getVocabularies()) {
-            listModel.addElement(v);
+            flashcardListModel.addElement(v);
         }
 
-        flashcardList = new JList<>(listModel);
+        flashcardList = new JList<>(flashcardListModel);
         flashcardList.setCellRenderer(new FlashcardListCellRenderer());
         flashcardList.setFixedCellHeight(30);
         flashcardList.setVisibleRowCount(5);
@@ -149,11 +161,58 @@ public class EditDeckView extends JPanel implements ActionListener {
         } else if (src == addFlashcardButton) {
             JOptionPane.showMessageDialog(this, "Add Flashcard not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == deleteFlashcardButton) {
-            JOptionPane.showMessageDialog(this, "Delete Flashcard not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
+            Vocabulary vocab = flashcardList.getSelectedValue();
+
+            if (vocab == null) {
+                JOptionPane.showMessageDialog(this, "Please select a flashcard", "No Flashcard Selected", JOptionPane.WARNING_MESSAGE);
+            } else {
+                DeleteFlashcardFromDeckState state = deleteFlashcardFromDeckViewModel.getState();
+
+                state.setWord(vocab.getWord());
+                state.setDeckTitle(targetDeck.getTitle());
+
+                deleteFlashcardFromDeckViewModel.setState(state);
+                deleteFlashcardFromDeckViewModel.firePropertyChange();
+
+                if (deleteFlashcardFromDeckController != null) {
+                    deleteFlashcard();
+                    flashcardListModel.removeElement(vocab);
+                } else {
+                    JOptionPane.showMessageDialog(this, "DeleteFlashcardFromDeckController not set", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
+    }
+
+    public void deleteFlashcard() {
+        final DeleteFlashcardFromDeckState currentState = deleteFlashcardFromDeckViewModel.getState();
+        deleteFlashcardFromDeckController.execute(
+                currentState.getDeckTitle(),
+                currentState.getWord()
+        );
+
+    }
+
+    public void setDeleteFlashcardController(DeleteFlashcardFromDeckController deleteFlashcardFromDeckController) {
+        this.deleteFlashcardFromDeckController = deleteFlashcardFromDeckController;
     }
 
     public String getViewName() {
         return viewName;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        final DeleteFlashcardFromDeckState state = (DeleteFlashcardFromDeckState) evt.getNewValue();
+
+        if (state.getError() != null) {
+            JOptionPane.showMessageDialog(this, state.getError());
+            state.setError(null);
+            deleteFlashcardFromDeckViewModel.setState(state);
+        } else if (state.getSuccessMessage() != null) {
+            JOptionPane.showMessageDialog(this, state.getSuccessMessage());
+            state.setSuccessMessage(null);
+            deleteFlashcardFromDeckViewModel.setState(state);
+        }
     }
 }
