@@ -93,11 +93,6 @@ public class DictionaryAPIDataAccess implements AddFlashcardToDeckDataAccessInte
     }
 
     @Override
-    public boolean existsByTitle(String title) {
-        return savedDecks.containsKey(title);
-    }
-
-    @Override
     public void updateDeckDetails(String oldTitle, Deck deck) {
         // Remove the old entry and put the new deck under its new title
         savedDecks.remove(oldTitle);

@@ -2,6 +2,8 @@ package use_case.update_deck_details;
 
 import entity.Deck;
 
+import java.util.Objects;
+
 public class UpdateDeckDetailsInteractor implements UpdateDeckDetailsInputBoundary {
 
     private final UpdateDeckDetailsDataAccessInterface userDataAccessObject;
@@ -31,7 +33,7 @@ public class UpdateDeckDetailsInteractor implements UpdateDeckDetailsInputBounda
             return;
         }
 
-        if (userDataAccessObject.existsByTitle(newTitle)) {
+        if (!(Objects.equals(deck.getTitle(), newTitle)) && userDataAccessObject.existsByTitle(newTitle)) {
             userPresenter.prepareFailView("A deck with this title already exists.");
             return;
         }
