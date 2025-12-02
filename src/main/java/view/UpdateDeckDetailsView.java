@@ -16,13 +16,18 @@ import java.beans.PropertyChangeListener;
 public class UpdateDeckDetailsView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private static final String VIEW_NAME = "update deck details";
+    private static final Color PINK_BACKGROUND = new Color(255, 240, 245);
+    private static final Color PINK_PRIMARY = new Color(255, 105, 180);
+    private static final Color PINK_DARK = new Color(199, 21, 133);
+    private static final Color PINK_HOVER = new Color(219, 112, 147);
+
     private final UpdateDeckDetailsViewModel viewModel;
 
     private final JTextField deckTitleField = new JTextField(20);
     private final JTextArea deckDescriptionArea = new JTextArea(5, 20);
 
     private final JButton applyButton;
-    private final JButton cancelButton;
+    private final JButton backButton;
 
     private UpdateDeckDetailsController controller;
 
@@ -30,24 +35,48 @@ public class UpdateDeckDetailsView extends JPanel implements ActionListener, Pro
         this.viewModel = viewModel;
         this.viewModel.addPropertyChangeListener(this);
 
+        this.setPreferredSize(new Dimension(900, 700));
+        this.setBackground(PINK_BACKGROUND);
+
         deckDescriptionArea.setLineWrap(true);
         deckDescriptionArea.setWrapStyleWord(true);
 
         final JLabel title = new JLabel(UpdateDeckDetailsViewModel.TITLE_LABEL);
+        title.setFont(new Font("Arial", Font.BOLD, 28));
+        title.setForeground(PINK_DARK);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         final LabelTextPanel deckTitlePanel = new LabelTextPanel(
                 new JLabel(UpdateDeckDetailsViewModel.DECK_TITLE_LABEL), deckTitleField);
+        deckTitlePanel.setFont(new Font("Arial", Font.BOLD, 20));
+        deckTitlePanel.setForeground(PINK_DARK);
+        deckTitlePanel.setBackground(PINK_BACKGROUND);
+        deckTitlePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        final JLabel deckDescriptionLabel = new JLabel(UpdateDeckDetailsViewModel.DECK_DESCRIPTION_LABEL);
+        deckDescriptionLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        deckDescriptionLabel.setForeground(PINK_DARK);
+        deckDescriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         final JPanel deckDescriptionPanel = new JPanel();
         deckDescriptionPanel.setLayout(new BoxLayout(deckDescriptionPanel, BoxLayout.Y_AXIS));
-        deckDescriptionPanel.add(new JLabel(UpdateDeckDetailsViewModel.DECK_DESCRIPTION_LABEL));
-        deckDescriptionPanel.add(new JScrollPane(deckDescriptionArea));
+        deckDescriptionPanel.add(deckDescriptionLabel);
+
+        final JScrollPane descriptionScrollPane = new JScrollPane(deckDescriptionArea);
+        descriptionScrollPane.getViewport().setBackground(Color.WHITE);
+        descriptionScrollPane.setBorder(BorderFactory.createLineBorder(PINK_DARK));
+        deckDescriptionPanel.add(descriptionScrollPane);
+        deckDescriptionPanel.setBackground(PINK_BACKGROUND);
+
+        Dimension buttonSize = new Dimension(150, 40);
+        Font buttonFont = new Font("Arial", Font.PLAIN, 16);
 
         final JPanel buttons = new JPanel();
-        applyButton = new JButton(UpdateDeckDetailsViewModel.APPLY_BUTTON_LABEL);
+        buttons.setBackground(PINK_BACKGROUND);
+        applyButton = createPinkButton(UpdateDeckDetailsViewModel.APPLY_BUTTON_LABEL, buttonSize, buttonFont);
+        backButton = createPinkButton(UpdateDeckDetailsViewModel.CANCEL_BUTTON_LABEL, buttonSize, buttonFont);
         buttons.add(applyButton);
-        cancelButton = new JButton(UpdateDeckDetailsViewModel.CANCEL_BUTTON_LABEL);
-        buttons.add(cancelButton);
+        buttons.add(backButton);
 
         applyButton.addActionListener(evt -> {
             if (controller == null) {
@@ -59,10 +88,10 @@ public class UpdateDeckDetailsView extends JPanel implements ActionListener, Pro
                     deckTitleField.getText().trim(),
                     deckDescriptionArea.getText().trim()
             );
-            switchToDecksView();
+            switchToEditDeckView();
         });
 
-        cancelButton.addActionListener(evt -> switchToDecksView());
+        backButton.addActionListener(evt -> switchToEditDeckView());
 
         deckTitleField.getDocument().addDocumentListener(new DocumentListener() {
             private void syncState() {
@@ -111,17 +140,55 @@ public class UpdateDeckDetailsView extends JPanel implements ActionListener, Pro
         });
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(Box.createVerticalStrut(40));
         this.add(title);
+        this.add(Box.createVerticalStrut(20));
         this.add(deckTitlePanel);
+        this.add(Box.createVerticalStrut(20));
         this.add(deckDescriptionPanel);
+        this.add(Box.createVerticalStrut(30));
         this.add(buttons);
+        this.add(Box.createVerticalGlue());
     }
 
-    public void switchToDecksView() {
+    private JButton createPinkButton(String text, Dimension size, Font font) {
+        JButton button = new JButton(text);
+        button.setPreferredSize(size);
+        button.setMaximumSize(size);
+        button.setFont(font);
+        button.setBackground(PINK_PRIMARY);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setOpaque(true);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(PINK_DARK, 1),
+                BorderFactory.createEmptyBorder(8, 15, 8, 15)
+        ));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(PINK_HOVER);
+                button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(PINK_PRIMARY);
+                button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        });
+
+        return button;
+    }
+
+    public void switchToEditDeckView() {
         Container parent = UpdateDeckDetailsView.this.getParent();
         if (parent.getLayout() instanceof CardLayout) {
             CardLayout layout = (CardLayout) parent.getLayout();
-            layout.show(parent, "decks");
+            layout.show(parent, "edit deck");
         }
     }
 
@@ -135,7 +202,18 @@ public class UpdateDeckDetailsView extends JPanel implements ActionListener, Pro
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Placeholder: could clear fields or route elsewhere if needed.
+        Object src = e.getSource();
+
+        if (src == applyButton) {
+            final UpdateDeckDetailsState currentState = viewModel.getState();
+            controller.execute(
+                    currentState.getOriginalDeckTitle(),
+                    currentState.getDeckTitle(),
+                    currentState.getDeckDescription()
+            );
+        } else if (src == backButton) {
+            switchToEditDeckView();
+        }
     }
 
     @Override

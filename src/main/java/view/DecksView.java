@@ -157,25 +157,15 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
             if (selectedDeck == null) {
                 JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
             } else {
-                // Start quiz for the selected deck
-                appBuilder.startQuizForDeck(selectedDeck);
+                viewManagerModel.setState("logged in");
+                viewManagerModel.firePropertyChange();
             }
         } else if (src == editButton) {
             Deck selectedDeck = deckList.getSelectedValue();
             if (selectedDeck == null){
                 JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
             } else {
-                UpdateDeckDetailsState state = updateDeckDetailsViewModel.getState();
-
-                state.setOriginalDeckTitle(selectedDeck.getTitle());
-                state.setDeckTitle(selectedDeck.getTitle());
-                state.setDeckDescription(selectedDeck.getDescription());
-
-                updateDeckDetailsViewModel.setState(state);
-                updateDeckDetailsViewModel.firePropertyChange();
-
-                viewManagerModel.setState("update deck details");
-                viewManagerModel.firePropertyChange();
+                appBuilder.showEditDeckView(selectedDeck);
             }
         } else if (src == backButton) {
             viewManagerModel.setState("logged in");
