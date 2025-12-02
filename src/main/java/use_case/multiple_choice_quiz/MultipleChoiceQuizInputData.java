@@ -6,7 +6,6 @@ public class MultipleChoiceQuizInputData {
         START_QUIZ,
         SELECT_ANSWER,
         NEXT_QUESTION,
-        RETAKE_INCORRECT
     }
 
     private final ActionType actionType;
