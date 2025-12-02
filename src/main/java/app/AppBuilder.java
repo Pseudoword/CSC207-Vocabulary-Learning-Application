@@ -28,10 +28,16 @@ import interface_adapter.multiple_choice_quiz.MultipleChoiceQuizViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.update_deck_details.UpdateDeckDetailsController;
+import interface_adapter.update_deck_details.UpdateDeckDetailsPresenter;
+import interface_adapter.update_deck_details.UpdateDeckDetailsViewModel;
 import use_case.StudyFlashCards.StudyFlashCardsDataAccessInterface;
 import use_case.StudyFlashCards.StudyFlashCardsInputBoundary;
 import use_case.StudyFlashCards.StudyFlashCardsInteractor;
 import use_case.StudyFlashCards.StudyFlashCardsOutputBoundary;
+import interface_adapter.update_deck_details.UpdateDeckDetailsController;
+import interface_adapter.update_deck_details.UpdateDeckDetailsPresenter;
+import interface_adapter.update_deck_details.UpdateDeckDetailsViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
@@ -47,6 +53,9 @@ import use_case.multiple_choice_quiz.MultipleChoiceQuizOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import use_case.update_deck_details.UpdateDeckDetailsInputBoundary;
+import use_case.update_deck_details.UpdateDeckDetailsInteractor;
+import use_case.update_deck_details.UpdateDeckDetailsOutputBoundary;
 import view.*;
 import data_access.DictionaryAPIDataAccess;
 import interface_adapter.add_flashcard_to_deck.AddFlashcardToDeckController;
@@ -91,7 +100,7 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
     private LoginView loginView;
-    private final AddFlashcardToDeckViewModel addFlashcardToDeckViewModel = new AddFlashcardToDeckViewModel();
+    private AddFlashcardToDeckViewModel addFlashcardToDeckViewModel;
     private AddFlashcardToDeckView addFlashcardToDeckView;
     private final CreateDeckViewModel createDeckViewModel = new CreateDeckViewModel();
     private CreateDeckView createDeckView;
@@ -109,6 +118,9 @@ public class AppBuilder {
     private StudyFlashCardsController studyFlashCardsController;
     private Deck currentDeck;
     private List<Deck> allDecks;
+    private UpdateDeckDetailsViewModel updateDeckDetailsViewModel = new UpdateDeckDetailsViewModel();
+    private UpdateDeckDetailsView updateDeckDetailsView;
+    private EditDeckView editDeckView;
     private MultipleChoiceQuizDataAccessInterface multipleChoiceQuizDataAccess;
 
 
@@ -147,19 +159,6 @@ public class AppBuilder {
         return dataAccessObject.getAllDecks();
     }
 
-    public void refreshDecksView() {
-        // Remove old DecksView
-        cardPanel.remove(decksView);
-
-        // Create new DecksView (will use the same deck instances from allDecks)
-        decksView = new DecksView(viewManagerModel, this);
-        cardPanel.add(decksView, decksView.getViewName());
-
-        // Refresh the panel
-        cardPanel.revalidate();
-        cardPanel.repaint();
-    }
-
     public AppBuilder addSignupView() {
         signupViewModel = new SignupViewModel();
         signupView = new SignupView(signupViewModel);
@@ -182,9 +181,36 @@ public class AppBuilder {
     }
 
     public AppBuilder addDecksView() {
-        decksView = new DecksView(viewManagerModel, this);
+        decksView = new DecksView(viewManagerModel, this, updateDeckDetailsViewModel);
         cardPanel.add(decksView, decksView.getViewName());
         return this;
+    }
+
+    public void refreshDecksView() {
+        // Remove old DecksView
+        cardPanel.remove(decksView);
+
+        // Create new DecksView (will use the same deck instances from allDecks)
+        decksView = new DecksView(viewManagerModel, this, updateDeckDetailsViewModel);
+        cardPanel.add(decksView, decksView.getViewName());
+
+        // Refresh the panel
+        cardPanel.revalidate();
+        cardPanel.repaint();
+    }
+
+    public void showEditDeckView(Deck deck) {
+        if (editDeckView != null) {
+            cardPanel.remove(editDeckView);
+        }
+
+        editDeckView = new EditDeckView(viewManagerModel, deck, updateDeckDetailsViewModel);
+        cardPanel.add(editDeckView, editDeckView.getViewName());
+        cardPanel.revalidate();
+        cardPanel.repaint();
+
+        viewManagerModel.setState(editDeckView.getViewName());
+        viewManagerModel.firePropertyChange();
     }
 
     public AppBuilder addStudyFlashCardsUseCaseForDeck(Deck deck) {
@@ -211,6 +237,20 @@ public class AppBuilder {
         addStudyFlashCardsUseCaseForDeck(deck);
 
         viewManagerModel.setState("StudyFlashCards");
+        viewManagerModel.firePropertyChange();
+    }
+
+    public void showEditDeckView(Deck deck) {
+        if (editDeckView != null) {
+            cardPanel.remove(editDeckView);
+        }
+
+        editDeckView = new EditDeckView(viewManagerModel, deck, updateDeckDetailsViewModel);
+        cardPanel.add(editDeckView, editDeckView.getViewName());
+        cardPanel.revalidate();
+        cardPanel.repaint();
+
+        viewManagerModel.setState(editDeckView.getViewName());
         viewManagerModel.firePropertyChange();
     }
 
@@ -417,6 +457,7 @@ public class AppBuilder {
         return this;
     }
     public AppBuilder addAddFlashcardToDeckView() {
+        addFlashcardToDeckViewModel = new AddFlashcardToDeckViewModel();
         addFlashcardToDeckView = new AddFlashcardToDeckView(addFlashcardToDeckViewModel);
         cardPanel.add(addFlashcardToDeckView, addFlashcardToDeckView.getViewName());
         return this;
@@ -457,6 +498,24 @@ public class AppBuilder {
 
         final CreateDeckController controller = new CreateDeckController(interactor);
         createDeckView.setController(controller);
+        return this;
+    }
+
+    public AppBuilder addUpdateDeckDetailsView() {
+        updateDeckDetailsView = new UpdateDeckDetailsView(updateDeckDetailsViewModel);
+        cardPanel.add(updateDeckDetailsView, updateDeckDetailsView.getViewName());
+        return this;
+    }
+
+    public AppBuilder addUpdateDeckDetailsUseCase() {
+        final UpdateDeckDetailsOutputBoundary outputBoundary =
+                new UpdateDeckDetailsPresenter(viewManagerModel, updateDeckDetailsViewModel);
+
+        final UpdateDeckDetailsInputBoundary interactor =
+                new UpdateDeckDetailsInteractor(dataAccessObject, outputBoundary);
+
+        final UpdateDeckDetailsController controller = new UpdateDeckDetailsController(interactor);
+        updateDeckDetailsView.setController(controller);
         return this;
     }
 

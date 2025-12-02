@@ -4,6 +4,7 @@ import entity.Deck;
 import entity.Vocabulary;
 import use_case.add_flashcard_to_deck.AddFlashcardToDeckDataAccessInterface;
 import use_case.create_deck.CreateDeckDataAccessInterface;
+import use_case.update_deck_details.UpdateDeckDetailsDataAccessInterface;
 
 import java.io.*;
 import java.util.*;
@@ -14,7 +15,8 @@ import java.util.*;
  * deckTitle|description|word1:definition1:incorrect1;word2:definition2:incorrect2;...
  */
 public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInterface,
-        CreateDeckDataAccessInterface {
+                                                    CreateDeckDataAccessInterface,
+                                                    UpdateDeckDetailsDataAccessInterface {
 
     private static final String DELIMITER = "|";
     private static final String WORD_DELIMITER = ";";
@@ -207,6 +209,13 @@ public class FileDeckDataAccessObject implements AddFlashcardToDeckDataAccessInt
     @Override
     public boolean existsByTitle(String deckTitle) {
         return decks.containsKey(deckTitle);
+    }
+
+    @Override
+    public void updateDeckDetails(String oldTitle, Deck deck) {
+        decks.remove(oldTitle);
+        decks.put(deck.getTitle(), deck);
+        save();
     }
 
     @Override
