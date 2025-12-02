@@ -139,6 +139,8 @@ A desktop application to help users expand and reinforce vocabulary with flashca
 * User selects the correct definition for the given word.
 * User selects “Next”.
 * Next question pops up.
+* User gets every question right.
+* System stores current deck as “Mastered”.
 
 **Alternative flow (incorrect answer)**
 
@@ -147,21 +149,6 @@ A desktop application to help users expand and reinforce vocabulary with flashca
 * System highlights the correct definition.
 * User selects “Next”.
 * Next question pops up.
-
----
-
-### Use Case 7: Mastering Decks
-
-**Main flow**
-
-* User passes multiple-choice quiz.
-* System stores current deck as “Mastered”.
-* User can start learning words from flashcards in a new deck.
-
-**Alternative flow**
-
-* User fails multiple-choice quiz.
-* System flags words from incorrect answers as “Review”.
 * User is prompted to retake a quiz generated from incorrect answers.
 
 ---
@@ -176,7 +163,6 @@ A desktop application to help users expand and reinforce vocabulary with flashca
 | Edit Deck                   | 4          | Jinuo       |
 | Study Flash Cards           | 5          | Kaiyang     |
 | Taking Multiple-choice Quiz | 6          | Lan         |
-| Mastering Decks             | 7          | Lan/Nerissa |
 
 ---
 
@@ -212,7 +198,6 @@ A desktop application to help users expand and reinforce vocabulary with flashca
 * **API Name:** Merriam-Webster’s Learner’s Dictionary with Audio
 * **Link:** [https://dictionaryapi.com/products/api-learners-dictionary](https://dictionaryapi.com/products/api-learners-dictionary)
 * **Main service:** Provides words with related definitions and other dictionary features.
-* **Status:** None
 
 ---
 
