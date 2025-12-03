@@ -1,7 +1,6 @@
 package app;
 
 import java.util.Collections;
-import java.util.Random;
 import data_access.FileUserDataAccessObject;
 import data_access.FileDeckDataAccessObject;
 import data_access.MultipleChoiceQuizDataAccessObject;
@@ -38,16 +37,12 @@ import use_case.StudyFlashCards.StudyFlashCardsDataAccessInterface;
 import use_case.StudyFlashCards.StudyFlashCardsInputBoundary;
 import use_case.StudyFlashCards.StudyFlashCardsInteractor;
 import use_case.StudyFlashCards.StudyFlashCardsOutputBoundary;
-import interface_adapter.update_deck_details.UpdateDeckDetailsController;
-import interface_adapter.update_deck_details.UpdateDeckDetailsPresenter;
-import interface_adapter.update_deck_details.UpdateDeckDetailsViewModel;
 import use_case.change_password.ChangePasswordInputBoundary;
 import use_case.change_password.ChangePasswordInteractor;
 import use_case.change_password.ChangePasswordOutputBoundary;
 import use_case.delete_flashcard_from_deck.DeleteFlashcardFromDeckInputBoundary;
 import use_case.delete_flashcard_from_deck.DeleteFlashcardFromDeckInteractor;
 import use_case.delete_flashcard_from_deck.DeleteFlashcardFromDeckOutputBoundary;
-import use_case.delete_flashcard_from_deck.DeleteFlashcardFromDeckOutputData;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -82,7 +77,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AppBuilder {
     private final JPanel cardPanel = new JPanel();
