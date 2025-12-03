@@ -86,6 +86,19 @@ class StudyFlashCardsInteractorTest {
     }
 
     @Test
+    void testExecuteNullDeckShowsFailure() {
+        setup();
+        dao.setDeck(null);
+
+        StudyFlashCardsInputData emptyInput = new StudyFlashCardsInputData(null);
+
+        interactor.execute(emptyInput);
+
+        assertEquals("noDeck", presenter.lastFailure);
+        assertNull(presenter.lastSuccess);
+    }
+
+    @Test
     void testNextMovesToSecondCard() {
         setup();
         interactor.execute(input);
