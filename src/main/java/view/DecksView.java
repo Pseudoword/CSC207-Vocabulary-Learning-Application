@@ -158,8 +158,7 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
                         "Quiz Unavailable",
                         JOptionPane.WARNING_MESSAGE);
             } else {
-                viewManagerModel.setState("logged in");
-                viewManagerModel.firePropertyChange();
+                appBuilder.startQuizForDeck(selectedDeck);
             }
         } else if (src == editButton) {
             Deck selectedDeck = deckList.getSelectedValue();
