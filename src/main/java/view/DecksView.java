@@ -3,9 +3,11 @@ package view;
 import interface_adapter.StudyFlashCards.StudyFlashCardsController;
 import app.AppBuilder;
 import entity.Deck;
-import entity.Vocabulary;
 import interface_adapter.ViewManagerModel;
 import use_case.StudyFlashCards.StudyFlashCardsInputData;
+
+import interface_adapter.update_deck_details.UpdateDeckDetailsState;
+import interface_adapter.update_deck_details.UpdateDeckDetailsViewModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,17 +22,19 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
     private final JList<Deck> deckList;
     private final DefaultListModel<Deck> listModel;
     private final JButton studyAllButton;
-    private final JButton reviewButton;
     private final JButton editButton;
     private final JButton takeQuizButton;
     private final JButton backButton;
     private final ViewManagerModel viewManagerModel;
+    private final UpdateDeckDetailsViewModel updateDeckDetailsViewModel;
     private final AppBuilder appBuilder;
 
-    public DecksView(ViewManagerModel viewManagerModel, AppBuilder appBuilder) {
+    public DecksView(ViewManagerModel viewManagerModel, AppBuilder appBuilder,
+                     UpdateDeckDetailsViewModel updateDeckDetailsViewModel) {
         this.viewManagerModel = viewManagerModel;
         this.appBuilder = appBuilder;
         this.viewManagerModel.addPropertyChangeListener(this);
+        this.updateDeckDetailsViewModel = updateDeckDetailsViewModel;
 
         this.setPreferredSize(new Dimension(900, 700));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -45,7 +49,7 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
         refreshDecks();
 
         deckList = new JList<>(listModel);
-        deckList.setCellRenderer(new DeckListCellRenderer());
+        deckList.setCellRenderer(new DeckListCellRenderer()); 
         deckList.setFixedCellHeight(30);
         deckList.setVisibleRowCount(5);
         deckList.setSelectionBackground(new Color(255, 240, 245));
@@ -58,12 +62,11 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
         Font buttonFont = new Font("Arial", Font.PLAIN, 16);
 
         studyAllButton = createPinkButton("Study All", buttonSize, buttonFont);
-        reviewButton = createPinkButton("Review", buttonSize, buttonFont);
         takeQuizButton = createPinkButton("Take Quiz", buttonSize, buttonFont);
         editButton = createPinkButton("Edit", buttonSize, buttonFont);
         backButton = createPinkButton("Back", buttonSize, buttonFont);
 
-        JButton[] buttons = {studyAllButton, reviewButton, takeQuizButton, editButton, backButton};
+        JButton[] buttons = {studyAllButton, takeQuizButton, editButton, backButton};
         for (JButton b : buttons) {
             b.setPreferredSize(buttonSize);
             b.setMaximumSize(buttonSize);
@@ -81,7 +84,6 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
         JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 10));
         buttonRow.setBackground(new Color(255, 240, 245));
         buttonRow.add(studyAllButton);
-        buttonRow.add(reviewButton);
         buttonRow.add(takeQuizButton);
         this.add(buttonRow);
         this.add(Box.createVerticalStrut(20));
@@ -137,7 +139,6 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
     @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
 
         if (src == studyAllButton) {
             Deck selectedDeck = deckList.getSelectedValue();
@@ -146,18 +147,26 @@ public class DecksView extends JPanel implements ActionListener, PropertyChangeL
             } else {
                 appBuilder.startStudyFlashCardsForDeck(selectedDeck);
             }
-        } else if (src == reviewButton) {
-            JOptionPane.showMessageDialog(this, "Use Case 6 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else if (src == takeQuizButton) {
             Deck selectedDeck = deckList.getSelectedValue();
             if (selectedDeck == null) {
                 JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
+            } else if (selectedDeck.getVocabularies().size() < 4) {
+                System.out.println(selectedDeck.getVocabularies());
+                JOptionPane.showMessageDialog(this,
+                        "Not enough vocabulary for quiz",
+                        "Quiz Unavailable",
+                        JOptionPane.WARNING_MESSAGE);
             } else {
-                // Start quiz for the selected deck
                 appBuilder.startQuizForDeck(selectedDeck);
             }
         } else if (src == editButton) {
-            JOptionPane.showMessageDialog(this, "Use Case 4 not implemented yet", "Information", JOptionPane.INFORMATION_MESSAGE);
+            Deck selectedDeck = deckList.getSelectedValue();
+            if (selectedDeck == null){
+                JOptionPane.showMessageDialog(this, "Please select a deck", "No Deck Selected", JOptionPane.WARNING_MESSAGE);
+            } else {
+                appBuilder.showEditDeckView(selectedDeck);
+            }
         } else if (src == backButton) {
             viewManagerModel.setState("logged in");
             viewManagerModel.firePropertyChange();

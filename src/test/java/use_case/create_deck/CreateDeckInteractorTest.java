@@ -149,7 +149,10 @@ class CreateDeckInteractorTest {
         assertFalse(presenter.isFailViewPrepared(), "Fail view should not be prepared");
 
         final Deck savedDeck = dataAccess.getSavedDeck();
-        assertEquals("  History Deck  ", savedDeck.getTitle());
+        assertEquals("History Deck", savedDeck.getTitle(), "Saved deck title should be trimmed");
+
+        final CreateDeckOutputData outputData = presenter.getOutputData();
+        assertEquals(deckTitle, outputData.getDeckTitle(), "Output should contain original untrimmed title");
     }
 
     @Test
@@ -174,6 +177,23 @@ class CreateDeckInteractorTest {
         assertTrue(presenter.isSuccessViewPrepared(), "Second attempt should succeed");
         assertFalse(presenter.isFailViewPrepared(), "Fail view should not be prepared");
         assertTrue(dataAccess.isSaveCalled(), "Save should have been called");
+    }
+
+    @Test
+    void testDeckCreationWithDuplicateTitleAfterTrimming() {
+        // NEW: Test that trimming works for duplicate detection
+        final String existingTitle = "My Deck";
+        dataAccess.addExistingDeck(existingTitle);
+
+        final String deckTitleWithSpaces = "  My Deck  ";
+        final CreateDeckInputData inputData = new CreateDeckInputData(deckTitleWithSpaces, "Description");
+
+        interactor.execute(inputData);
+
+        assertFalse(presenter.isSuccessViewPrepared(), "Success view should not be prepared");
+        assertTrue(presenter.isFailViewPrepared(), "Fail view should be prepared");
+        assertEquals("Deck 'My Deck' already exists.", presenter.getErrorMessage());
+        assertFalse(dataAccess.isSaveCalled(), "Save should not have been called");
     }
 
     private static class TestCreateDeckDataAccess implements CreateDeckDataAccessInterface {

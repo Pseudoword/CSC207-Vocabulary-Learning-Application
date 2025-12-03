@@ -1,0 +1,24 @@
+package use_case.delete_flashcard_from_deck;
+
+import entity.Deck;
+
+/**
+ * The Data Access Interface for the Delete Flashcard from Deck Use Case.
+ */
+public interface DeleteFlashcardFromDeckDataAccessInterface {
+
+    /**
+     * Returns the deck with the given title.
+     *
+     * @param deckTitle the title of the deck to retrieve
+     * @return the Deck object, or null if it does not exist
+     */
+    Deck getDeck(String deckTitle);
+
+    /**
+     * Saves the updated deck to the persistence layer.
+     *
+     * @param deck the deck to save
+     */
+    void save(Deck deck);
+}

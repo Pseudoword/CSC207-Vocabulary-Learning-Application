@@ -31,7 +31,4 @@ public class StudyFlashCardsController {
         final StudyFlashCardsInputData inputData = new StudyFlashCardsInputData(deckName);
         studyFlashCardsInputBoundary.reveal(inputData);
     }
-    public void switchToReviewView(){
-        //not used now
-    }
 }

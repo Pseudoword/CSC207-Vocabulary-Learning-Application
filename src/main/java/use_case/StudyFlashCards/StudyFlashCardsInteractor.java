@@ -8,23 +8,22 @@ public class StudyFlashCardsInteractor implements StudyFlashCardsInputBoundary {
     private final StudyFlashCardsOutputBoundary outputBoundary;
     private int index = 0;
     private boolean isWord = true;
-    private boolean isFlag = false;
     private Deck deck;
     private String diplayText;
-    public StudyFlashCardsInteractor(StudyFlashCardsDataAccessInterface dataAccessObject, StudyFlashCardsOutputBoundary outputBoundary) {
+    public StudyFlashCardsInteractor(StudyFlashCardsDataAccessInterface dataAccessObject,
+                                     StudyFlashCardsOutputBoundary outputBoundary) {
         this.dataAccessObject = dataAccessObject;
         this.outputBoundary = outputBoundary;
     }
 
     @Override
-    public void execute(StudyFlashCardsInputData inputData) { //first word when loaded
+    public void execute(StudyFlashCardsInputData inputData) {
         deck = dataAccessObject.getDeck(inputData.getDeckName());
-        if (deck == null || deck.isEmpty()) {
-            System.out.println("No deck found");
-            // shouldn't be empty can't create empty deck
-            outputBoundary.prepareFailureView("Deck is empty.");
-            return;
-        } else{
+        if (deck == null) {
+            outputBoundary.prepareFailureView("noDeck");
+        } else if (deck.isEmpty()) {
+            outputBoundary.prepareFailureView("noWords");
+        } else {
             this.index = 0;
             this.isWord = true;
             presentCard();
@@ -50,10 +49,9 @@ public class StudyFlashCardsInteractor implements StudyFlashCardsInputBoundary {
     }
 
     public void flag(StudyFlashCardsInputData inputData) {
-        isFlag = !isFlag;
         deck = dataAccessObject.getDeck(inputData.getDeckName());
         Vocabulary vocab = deck.getVocabularies().get(index);
-        vocab.setFlagged(isFlag);
+        vocab.setFlagged(!vocab.getFlagged());
         presentCard();
     }
 
@@ -61,11 +59,6 @@ public class StudyFlashCardsInteractor implements StudyFlashCardsInputBoundary {
         isWord = !isWord;
         deck = dataAccessObject.getDeck(inputData.getDeckName());
         presentCard();
-    }
-
-    @Override
-    public void switchToReviewView() {
-        // not in use currently
     }
 
     private void presentCard() {
@@ -81,5 +74,4 @@ public class StudyFlashCardsInteractor implements StudyFlashCardsInputBoundary {
                 );
         outputBoundary.prepareSuccessView(output);
     }
-
 }

@@ -32,6 +32,7 @@ public class MultipleChoiceQuizView extends JPanel {
         this.viewModel = viewModel;
         this.viewManagerModel = viewManagerModel;
         this.appBuilder = appBuilder;
+        this.appBuilder.setOriginalQuestions(multipleChoiceQuizController.getAllQuestions());
         setupUI();
         refreshView();
     }
@@ -150,7 +151,6 @@ public class MultipleChoiceQuizView extends JPanel {
         decksButton.addActionListener(e -> {
             if (appBuilder != null) {
                 appBuilder.markCurrentDeckAsTaken();
-                appBuilder.refreshDecksView();
             }
             viewManagerModel.setState("decks");
             viewManagerModel.firePropertyChange();

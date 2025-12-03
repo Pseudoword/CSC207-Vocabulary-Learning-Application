@@ -81,7 +81,20 @@ class StudyFlashCardsInteractorTest {
 
         interactor.execute(emptyInput);
 
-        assertEquals("Deck is empty.", presenter.lastFailure);
+        assertEquals("noWords", presenter.lastFailure);
+        assertNull(presenter.lastSuccess);
+    }
+
+    @Test
+    void testExecuteNullDeckShowsFailure() {
+        setup();
+        dao.setDeck(null);
+
+        StudyFlashCardsInputData emptyInput = new StudyFlashCardsInputData(null);
+
+        interactor.execute(emptyInput);
+
+        assertEquals("noDeck", presenter.lastFailure);
         assertNull(presenter.lastSuccess);
     }
 
