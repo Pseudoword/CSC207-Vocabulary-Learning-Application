@@ -8,11 +8,14 @@ import entity.Vocabulary;
  */
 public class AddFlashcardToDeckInteractor implements AddFlashcardToDeckInputBoundary {
     private final AddFlashcardToDeckDataAccessInterface dataAccessObject;
+    private final DictionaryAPIInterface dictionaryAPI;
     private final AddFlashcardToDeckOutputBoundary outputBoundary;
 
     public AddFlashcardToDeckInteractor(AddFlashcardToDeckDataAccessInterface dataAccessObject,
+                                        DictionaryAPIInterface dictionaryAPI,
                                         AddFlashcardToDeckOutputBoundary outputBoundary) {
         this.dataAccessObject = dataAccessObject;
+        this.dictionaryAPI = dictionaryAPI;
         this.outputBoundary = outputBoundary;
     }
 
@@ -44,7 +47,7 @@ public class AddFlashcardToDeckInteractor implements AddFlashcardToDeckInputBoun
             }
         }
 
-        final String definition = dataAccessObject.fetchDefinition(word);
+        final String definition = dictionaryAPI.fetchDefinition(word);
 
         if (definition == null) {
             outputBoundary.prepareFailView("Could not find a definition for '" + word + "'.");
