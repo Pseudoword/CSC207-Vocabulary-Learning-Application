@@ -114,7 +114,7 @@ public class AppBuilder {
     private MultipleChoiceQuizViewModel multipleChoiceQuizViewModel;
     private MultipleChoiceQuizController multipleChoiceQuizController;
     private MultipleChoiceQuizInteractor multipleChoiceQuizInteractor;
-    private ArrayList<MultipleChoiceQuestion> originalQuestions;
+    private List<MultipleChoiceQuestion> originalQuestions;
     private MultipleChoiceQuizView multipleChoiceQuizView;
     private DecksView decksView;
     private StudyFlashCardsViewModel studyFlashCardsViewModel;
@@ -388,9 +388,14 @@ public class AppBuilder {
         viewManagerModel.setState("MultipleChoiceQuiz");
         viewManagerModel.firePropertyChange();
     }
-
+    public void setOriginalQuestions(List<MultipleChoiceQuestion> originalQuestions) {
+        this.originalQuestions = originalQuestions;
+    }
 
     public List<MultipleChoiceQuestion> getOriginalQuestions() {
+        if (originalQuestions == null) {
+            return Collections.emptyList();
+        }
         return new ArrayList<>(originalQuestions);
     }
 

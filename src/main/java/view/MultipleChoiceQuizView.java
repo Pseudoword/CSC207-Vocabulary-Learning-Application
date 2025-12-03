@@ -32,6 +32,7 @@ public class MultipleChoiceQuizView extends JPanel {
         this.viewModel = viewModel;
         this.viewManagerModel = viewManagerModel;
         this.appBuilder = appBuilder;
+        this.appBuilder.setOriginalQuestions(multipleChoiceQuizController.getAllQuestions());
         setupUI();
         refreshView();
     }
